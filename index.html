@@ -1,0 +1,2081 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="htmlTag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAMAA Platform | منصة نماء - E-Commerce Platform</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Cairo & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        html {
+            zoom: 0.75;
+            transition: zoom 0.3s ease-in-out;
+        }
+        body { font-family: 'Cairo', 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .product-card { transition: all 0.25s ease-in-out; cursor: pointer; }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.08); }
+        .cat-card { transition: all 0.2s ease; }
+        .cat-card:hover { transform: translateY(-2px); background-color: #f1f5f9; }
+        
+        /* تأثيرات ظهور واختفاء إشعارات الـ Toast */
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .toast-enter { animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased bg-slate-50">
+
+    <!-- نظام إشعارات الـ Toast العصري -->
+    <div id="toastContainer" class="fixed bottom-6 z-[100] flex flex-col gap-2 pointer-events-none px-4 sm:px-6 w-full max-w-sm ltr:left-6 rtl:right-6"></div>
+
+    <!-- شريط الأخطاء البرمجية -->
+    <script>
+        (function () {
+            function show(msg) {
+                var bar = document.getElementById('jsErrorBar');
+                if (!bar) {
+                    bar = document.createElement('div');
+                    bar.id = 'jsErrorBar';
+                    bar.setAttribute('style', 'position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#7f1d1d;color:#fff;font:12px/1.5 Arial,sans-serif;padding:8px 12px;direction:ltr;text-align:left;');
+                    var txt = document.createElement('span'); txt.id = 'jsErrorText'; bar.appendChild(txt);
+                    var close = document.createElement('button'); close.textContent = 'X';
+                    close.setAttribute('style', 'float:right;margin-left:12px;background:#fff;color:#7f1d1d;border:0;border-radius:4px;padding:0 8px;cursor:pointer;');
+                    close.onclick = function () { bar.style.display = 'none'; };
+                    bar.appendChild(close);
+                    (document.body || document.documentElement).appendChild(bar);
+                }
+                bar.style.display = 'block';
+                document.getElementById('jsErrorText').textContent = 'Page error: ' + msg;
+            }
+            window.addEventListener('error', function (ev) {
+                if (ev.target && ev.target !== window) return;                 
+                var f = ev.filename || '';
+                var page = location.href.split('#')[0].split('?')[0];
+                if (f && f.indexOf(page) !== 0) return;                         
+                show((ev.message || 'unknown') + (ev.lineno ? ' (line ' + ev.lineno + ')' : ''));
+            });
+        })();
+    </script>
+
+    <!-- ================= 1. PORTAL LANDING PAGE ================= -->
+    <div id="portalScreen" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center p-4 overflow-y-auto">
+
+        <div class="absolute top-6 left-6 z-10 flex items-center gap-2 bg-slate-900/80 p-1.5 rounded-2xl border border-white/10 backdrop-blur-md shadow-lg">
+            <button onclick="toggleLanguage()" class="px-3.5 py-2 rounded-xl text-xs font-black bg-white/10 hover:bg-white/20 text-white transition flex items-center gap-2">
+                <i class="fa-solid fa-globe text-teal-400"></i> <span id="portalLangBtn">English</span>
+            </button>
+            <div class="w-px h-4 bg-white/20"></div>
+            <button onclick="cycleZoom()" id="portalZoomBtn" class="px-3 py-2 rounded-xl text-xs font-black text-amber-400 hover:bg-white/10 transition flex items-center gap-1.5">
+                <i class="fa-solid fa-magnifying-glass-plus"></i> <span id="portalZoomText">Zoom: 75%</span>
+            </button>
+        </div>
+
+        <div class="absolute -top-40 -left-40 w-96 h-96 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative max-w-lg w-full text-center space-y-6 bg-slate-900/60 backdrop-blur-xl p-8 md:p-10 rounded-3xl border border-white/10 shadow-2xl my-auto">
+
+            <div class="relative inline-flex items-center justify-center">
+                <div class="absolute inset-0 bg-emerald-500/30 rounded-full blur-xl"></div>
+                <div class="relative w-28 h-28 rounded-2xl bg-gradient-to-tr from-emerald-800 to-teal-600 text-white text-6xl flex items-center justify-center shadow-xl border border-white/20">
+                    🌱
+                </div>
+            </div>
+
+            <div>
+                <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight flex items-center justify-center gap-2" dir="ltr" translate="no">
+                    <span class="text-emerald-400">NAMAA</span> <span class="text-white">نماء</span>
+                </h1>
+                <p id="portalSlogan1" class="text-amber-400 font-extrabold text-xs tracking-widest mt-2 uppercase flex items-center justify-center gap-1.5"><i class="fa-solid fa-seedling text-emerald-400"></i> From Our Students .. To Our Community</p>
+                <p id="portalSlogan2" class="text-slate-400 text-xs font-semibold mt-1 flex items-center justify-center gap-1"><i class="fa-solid fa-graduation-cap text-teal-400"></i> E-Commerce Course</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <button onclick="promptPortalPin('boys')" class="group relative p-5 bg-gradient-to-br from-slate-800/80 to-blue-950/40 hover:to-blue-900/80 rounded-2xl border border-blue-500/30 hover:border-blue-400 transition-all duration-300 text-left rtl:text-right flex flex-col justify-between shadow-lg hover:shadow-blue-500/20">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-mars"></i></span>
+                        <i class="fa-solid fa-lock text-slate-500 group-hover:text-amber-400 transition"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-white text-base flex items-center gap-1.5"><i class="fa-solid fa-user-graduate text-blue-400 text-xs"></i> M-STUDENTS</h3>
+                        <p id="portalBoysSubtitle" class="text-[11px] text-slate-400 font-bold mt-0.5">Boys Section</p>
+                    </div>
+                </button>
+
+                <button onclick="promptPortalPin('girls')" class="group relative p-5 bg-gradient-to-br from-slate-800/80 to-pink-950/40 hover:to-pink-900/80 rounded-2xl border border-pink-500/30 hover:border-pink-400 transition-all duration-300 text-left rtl:text-right flex flex-col justify-between shadow-lg hover:shadow-pink-500/20">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-10 h-10 rounded-xl bg-pink-500/20 text-pink-400 flex items-center justify-center text-xl font-bold"><i class="fa-solid fa-venus"></i></span>
+                        <i class="fa-solid fa-lock text-slate-500 group-hover:text-amber-400 transition"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-white text-base flex items-center gap-1.5"><i class="fa-solid fa-user-graduate text-pink-400 text-xs"></i> F-STUDENTS</h3>
+                        <p id="portalGirlsSubtitle" class="text-[11px] text-slate-400 font-bold mt-0.5">Girls Section</p>
+                    </div>
+                </button>
+            </div>
+
+            <p id="portalInstructions" class="text-[11px] text-slate-400 font-semibold pt-1 flex items-center justify-center gap-1"><i class="fa-solid fa-circle-info text-teal-400"></i> Select a section and enter the access pin to browse products</p>
+
+            <div class="pt-4 border-t border-white/10 text-center" translate="no" dir="ltr">
+                <p class="text-[11px] text-teal-400/80 font-extrabold uppercase tracking-[0.2em] mb-1">DESIGNED & DEVELOPED BY:</p>
+                <p class="text-base font-black text-sky-400 tracking-wider font-['Inter'] drop-shadow-[0_0_10px_rgba(56,189,248,0.5)]">MOHANAD MIQDAD</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 2. PIN AUTHENTICATION MODAL ================= -->
+    <div id="portalPinModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-100">
+            <div class="bg-teal-900 text-white p-5 flex justify-between items-center">
+                <button onclick="closePortalPinModal()" class="text-slate-300 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+                <h3 id="pinModalTitle" class="font-extrabold text-xs flex items-center gap-2">Section Access Pin <i class="fa-solid fa-key text-amber-400"></i></h3>
+            </div>
+            <form onsubmit="verifyPortalPin(event)" class="p-6 space-y-4">
+                <div>
+                    <label id="pinModalLabel" class="block text-xs font-bold text-slate-700 mb-2 flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-teal-800"></i> Please enter the access code for this section</label>
+                    <input type="password" id="portalPinInput" required placeholder="******" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-center text-lg tracking-widest focus:ring-2 focus:ring-teal-700 focus:outline-none font-bold">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="submit" id="pinModalBtn" class="w-full py-3 bg-teal-800 hover:bg-teal-900 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-2"><i class="fa-solid fa-right-to-bracket"></i> Enter Platform</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= 3. MAIN MARKETPLACE APP ================= -->
+    <div id="appContainer" class="hidden flex-1 flex flex-col">
+        <header class="bg-white/95 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 shadow-xs py-2.5">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-2.5 flex-wrap">
+                <div class="flex items-center gap-2.5 cursor-pointer group shrink-0" onclick="showHome()">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-800 to-teal-600 text-white flex items-center justify-center font-black text-lg shadow-md border border-emerald-700/20 group-hover:scale-105 transition">
+                        🌱
+                    </div>
+                    <div>
+                        <h1 class="font-black text-sm sm:text-base text-slate-900 tracking-tight leading-none flex items-center gap-1.5" translate="no">
+                            <span class="text-slate-900">نماء</span><span class="text-teal-700 text-[10px] font-bold px-1.5 py-0.5 bg-teal-50 rounded-md border border-teal-100">NAMAA</span>
+                        </h1>
+                        <p id="headerSlogan" class="text-[8px] sm:text-[9px] text-amber-600 font-extrabold tracking-wide mt-1 flex items-center gap-1"><i class="fa-solid fa-seedling text-emerald-600 text-[8px]"></i> From Our Students .. To Our Community</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 flex-wrap">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <button onclick="startAddProduct()" class="h-8 px-2.5 rounded-xl text-[11px] font-black bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-800 hover:to-teal-900 text-white transition flex items-center gap-1 shadow-sm border border-emerald-600/30 shrink-0">
+                            <i class="fa-solid fa-circle-plus text-amber-300 text-[11px]"></i> <span id="btnAddProduct">Add New Product</span>
+                        </button>
+                        
+                        <button onclick="openMyAuthModal()" class="h-8 px-2.5 rounded-xl text-[11px] font-black bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center gap-1 shadow-sm border border-emerald-500/30 shrink-0">
+                            <i class="fa-solid fa-box-archive text-[11px]"></i> <span id="btnMyProducts">My Products</span>
+                        </button>
+
+                        <button onclick="openAdminModal()" class="h-8 px-2.5 rounded-xl text-[11px] font-extrabold bg-slate-800 hover:bg-slate-900 text-amber-300 transition flex items-center gap-1 border border-slate-700 shadow-sm shrink-0">
+                            <i class="fa-solid fa-user-shield text-[11px]"></i> <span id="btnAdminPanel">Admin Panel 🔐</span>
+                        </button>
+                    </div>
+
+                    <div class="w-px h-5 bg-slate-200 hidden lg:block shrink-0"></div>
+
+                    <div class="flex items-center gap-1 bg-slate-100/90 p-0.5 rounded-xl border border-slate-200 shrink-0">
+                        <button onclick="cycleZoom()" id="appZoomBtn" class="h-7 px-2 rounded-lg text-[11px] font-black text-amber-800 hover:bg-white transition flex items-center gap-1 shadow-2xs shrink-0">
+                            <i class="fa-solid fa-magnifying-glass-plus text-amber-600 text-[10px]"></i> <span id="appZoomText">Zoom: 50%</span>
+                        </button>
+                        <button onclick="toggleLanguage()" class="h-7 px-2 rounded-lg text-[11px] font-black text-teal-900 hover:bg-white transition flex items-center gap-1 shadow-2xs shrink-0">
+                            <i class="fa-solid fa-globe text-teal-700 text-[10px]"></i> <span id="appLangBtn">English</span>
+                        </button>
+                        <button onclick="returnToPortal()" class="h-7 w-7 rounded-lg text-xs font-bold text-slate-500 hover:text-red-600 hover:bg-white transition flex items-center justify-center shrink-0" title="Logout">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1">
+            <div id="heroBanner" class="relative bg-gradient-to-b from-amber-50/60 to-white py-12 md:py-16 border-b border-slate-100">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="order-2 md:order-1">
+                            <div class="relative rounded-3xl overflow-hidden shadow-xl border border-slate-200 bg-white group">
+                                <img src="https://dl.dropboxusercontent.com/scl/fi/nlw34a7sock6c9lrx1mbz/img_Arabic_Designer_1793387464472.png?rlkey=naiiucxkrobzu3ody13jl3ksw" alt="NAMAA Platform" class="w-full h-72 md:h-80 object-cover group-hover:scale-105 transition duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent"></div>
+                                <span id="heroImageBadge" class="absolute bottom-4 right-4 bg-teal-900/90 text-white text-xs font-bold px-3.5 py-2 rounded-xl backdrop-blur-md border border-white/10 flex items-center gap-1.5 shadow-lg">
+                                    <i class="fa-solid fa-seedling text-emerald-400"></i> Student Creations 🌿
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="order-1 md:order-2">
+                            <div id="sectionHeaderBadge" class="inline-flex items-center gap-2 bg-teal-50 text-teal-800 text-xs font-extrabold px-4 py-1.5 rounded-full mb-4 border border-teal-100 shadow-2xs"></div>
+
+                            <h2 id="heroTitle" class="text-3xl md:text-4xl font-black text-slate-900 leading-tight mb-3 flex items-center gap-2.5">
+                                <i class="fa-solid fa-sparkles text-amber-500 text-2xl"></i> From Talent Passion.. To Making an Impact
+                            </h2>
+                            <p id="heroSubtitle" class="text-slate-700 text-sm md:text-base font-bold mb-6 leading-relaxed flex items-center gap-1.5">
+                                <i class="fa-solid fa-bag-shopping text-teal-700"></i> The E-Commerce platform for course students to showcase products, support peers, and discover creations easily.
+                            </p>
+
+                            <div class="relative max-w-md">
+                                <span class="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none text-teal-700 text-sm">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Search product, category, or student..." class="w-full ps-11 pe-4 py-3.5 bg-white border border-slate-200 rounded-2xl text-xs md:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-teal-700 shadow-sm transition">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="studentProfileHeader" class="hidden max-w-7xl mx-auto px-4 sm:px-6 my-6">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-teal-50 text-teal-800 rounded-2xl flex items-center justify-center font-black text-2xl border border-teal-100">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <div>
+                            <span id="profileStoreLabel" class="text-[11px] font-bold text-slate-400 uppercase flex items-center gap-1.5"><i class="fa-solid fa-shop text-teal-700"></i> Student's Store:</span>
+                            <h2 id="profileStudentName" class="text-2xl font-black text-slate-900">...</h2>
+                            <p id="profileProductCount" class="text-xs font-bold text-teal-700 mt-0.5 flex items-center gap-1.5"><i class="fa-solid fa-box text-teal-600"></i> Total Products: 0</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 w-full md:w-auto">
+                        <a id="profileWhatsappBtn" href="#" target="_blank" rel="noopener" class="flex-1 md:flex-none px-5 py-2.5 bg-teal-800 hover:bg-teal-900 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition shadow-sm">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> <span id="btnProfileContact">Contact Seller</span>
+                        </a>
+                        <button onclick="showHome()" id="btnProfileShowAll" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrow-rotate-left"></i> View All Section Products
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+                <div class="mb-12">
+                    <h3 id="catSectionTitle" class="text-lg font-black text-slate-900 mb-6 flex items-center gap-2"><i class="fa-solid fa-grip text-teal-700"></i> Browse by Category</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3" id="categoryButtons">
+                        <button onclick="setCategory('Agricultural')" class="cat-btn cat-card bg-white p-4 rounded-2xl border border-slate-200/80 text-center flex flex-col items-center justify-center gap-2">
+                            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-700 flex items-center justify-center text-base"><i class="fa-solid fa-seedling"></i></div>
+                            <span class="text-xs font-bold text-slate-700 cat-name-agri">Agricultural</span>
+                        </button>
+                        <button onclick="setCategory('Food')" class="cat-btn cat-card bg-white p-4 rounded-2xl border border-slate-200/80 text-center flex flex-col items-center justify-center gap-2">
+                            <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-700 flex items-center justify-center text-base"><i class="fa-solid fa-utensils"></i></div>
+                            <span class="text-xs font-bold text-slate-700 cat-name-food">Food Items</span>
+                        </button>
+                        <button onclick="setCategory('Household')" class="cat-btn cat-card bg-white p-4 rounded-2xl border border-slate-200/80 text-center flex flex-col items-center justify-center gap-2">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-base"><i class="fa-solid fa-house-chimney"></i></div>
+                            <span class="text-xs font-bold text-slate-700 cat-name-home">Household</span>
+                        </button>
+                        <button onclick="setCategory('Clothing')" class="cat-btn cat-card bg-white p-4 rounded-2xl border border-slate-200/80 text-center flex flex-col items-center justify-center gap-2">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center text-base"><i class="fa-solid fa-shirt"></i></div>
+                            <span class="text-xs font-bold text-slate-700 cat-name-clothes">Clothing</span>
+                        </button>
+                        <button onclick="setCategory('Accessories')" class="cat-btn cat-card bg-white p-4 rounded-2xl border border-slate-200/80 text-center flex flex-col items-center justify-center gap-2">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-base"><i class="fa-solid fa-gem"></i></div>
+                            <span class="text-xs font-bold text-slate-700 cat-name-acc">Accessories</span>
+                        </button>
+                        <button onclick="setCategory('Handmade')" class="cat-btn cat-card bg-white p-4 rounded-2xl border border-slate-200/80 text-center flex flex-col items-center justify-center gap-2">
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-base"><i class="fa-solid fa-hands-holding-child"></i></div>
+                            <span class="text-xs font-bold text-slate-700 cat-name-crafts">Handmade</span>
+                        </button>
+                        <button onclick="setCategory('Other')" class="cat-btn cat-card bg-white p-4 rounded-2xl border border-slate-200/80 text-center flex flex-col items-center justify-center gap-2">
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-base"><i class="fa-solid fa-box-archive"></i></div>
+                            <span class="text-xs font-bold text-slate-700 cat-name-other">Other</span>
+                        </button>
+                        <button onclick="setCategory('all')" class="cat-btn cat-card active bg-white p-4 rounded-2xl border border-teal-700 text-center flex flex-col items-center justify-center gap-2 shadow-xs">
+                            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-800 flex items-center justify-center text-base"><i class="fa-solid fa-border-all"></i></div>
+                            <span class="text-xs font-bold text-slate-800 cat-name-all">All Categories</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="productsSection" class="flex justify-between items-center mb-6">
+                    <button onclick="showHome()" id="btnShowAllHeader" class="text-xs font-bold text-teal-800 hover:underline flex items-center gap-1.5">
+                        <i class="fa-solid fa-list text-[10px]"></i> Show All <i class="fa-solid fa-arrow-right rtl:rotate-180 text-[10px]"></i>
+                    </button>
+                    <h3 id="latestProductsTitle" class="text-lg font-black text-slate-900 flex items-center gap-2"><i class="fa-solid fa-sparkles text-amber-500"></i> Latest Products</h3>
+                </div>
+
+                <div id="productsGrid" class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-5"></div>
+
+                <div id="loadingState" class="hidden text-center py-16 text-slate-400 text-sm font-bold">
+                    <i class="fa-solid fa-spinner fa-spin text-teal-700 text-xl mb-3 block"></i>
+                    <span id="loadingText">Loading products...</span>
+                </div>
+
+                <div id="emptyState" class="hidden text-center py-16 bg-white rounded-3xl border border-slate-200 my-6">
+                    <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <h4 id="emptyStateTitle" class="font-bold text-slate-800 text-base mb-1">No products currently in this section</h4>
+                    <p id="emptyStateDesc" class="text-slate-400 text-xs">Be the first to add a new product!</p>
+                </div>
+
+                <div id="adminDashboard" class="hidden bg-white rounded-3xl p-6 md:p-8 shadow-xl border border-slate-200 mt-12">
+                    <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <button onclick="changeAdminPassword()" id="btnAdminChangePass" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-key"></i> Change Password
+                            </button>
+                            <button onclick="closeAdminDashboard()" id="btnAdminClose" class="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-xmark"></i> Close Dashboard
+                            </button>
+                        </div>
+                        <div>
+                            <h3 id="adminHeaderTitle" class="text-lg font-black text-slate-900 flex items-center gap-2">
+                                Admin Dashboard <i class="fa-solid fa-user-shield text-teal-800"></i>
+                            </h3>
+                            <p id="adminHeaderSubtitle" class="text-xs text-slate-400 font-semibold mt-1">Manage and delete products in current section</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-slate-100 p-4 rounded-2xl border border-slate-200">
+                            <span id="statCategoriesLabel" class="text-xs text-slate-600 font-bold flex items-center gap-1.5"><i class="fa-solid fa-folder-tree text-slate-700"></i> Available Categories</span>
+                            <p id="statTotalCategories" class="text-2xl font-black text-slate-800 mt-1">0</p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-2xl border border-amber-100">
+                            <span id="statStudentsLabel" class="text-xs text-amber-800 font-bold flex items-center gap-1.5"><i class="fa-solid fa-user-graduate text-amber-700"></i> Active Students</span>
+                            <p id="statTotalStudents" class="text-2xl font-black text-amber-950 mt-1">0</p>
+                        </div>
+                        <div class="bg-teal-50 p-4 rounded-2xl border border-teal-100">
+                            <span id="statProductsLabel" class="text-xs text-teal-800 font-bold flex items-center gap-1.5"><i class="fa-solid fa-boxes-stacked text-teal-700"></i> Total Products</span>
+                            <p id="statTotalProducts" class="text-2xl font-black text-teal-950 mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-2xl border border-slate-100">
+                        <table class="w-full text-xs">
+                            <thead>
+                                <tr class="bg-slate-900 text-slate-200 font-bold">
+                                    <th id="thStudent" class="p-3.5"><i class="fa-solid fa-user text-teal-400 me-1"></i> Student Name</th>
+                                    <th id="thCategoryCol" class="p-3.5"><i class="fa-solid fa-folder text-teal-400 me-1"></i> Category</th>
+                                    <th id="thProduct" class="p-3.5"><i class="fa-solid fa-box text-teal-400 me-1"></i> Product Title</th>
+                                    <th id="thPrice" class="p-3.5"><i class="fa-solid fa-tag text-teal-400 me-1"></i> Price</th>
+                                    <th id="thWhatsapp" class="p-3.5"><i class="fa-brands fa-whatsapp text-teal-400 me-1"></i> WhatsApp</th>
+                                    <th id="thActions" class="p-3.5 text-center"><i class="fa-solid fa-gears text-teal-400"></i> Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTableBody" class="divide-y divide-slate-100 bg-white"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-6 pt-5 border-t border-slate-100">
+                        <h4 id="adminAccountsTitle" class="text-sm font-black text-slate-900 mb-3 flex items-center gap-2"><i class="fa-solid fa-users-gear text-teal-800"></i> Student Accounts (Reset Password)</h4>
+                        <div id="adminAccountsList" class="flex flex-wrap gap-2 text-xs"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer id="footerSection" class="mt-20 relative overflow-hidden">
+            <div class="w-full">
+                <div class="relative bg-cover bg-center py-8 px-4 md:px-12 border-y-2 border-teal-400 shadow-[0_0_35px_rgba(45,212,191,0.35)] flex flex-row items-center justify-between gap-6 overflow-hidden"
+                     style="background-image: linear-gradient(to right, rgba(8,14,19,0.95), rgba(14,23,30,0.95)), url('https://www.dropbox.com/scl/fi/pg82h8hz9rpahefo36fb7/1793454135659.jpg?rlkey=6olaxknw1m11j0rilxgk2duws&st=w3p5py8m&raw=1');">
+
+                    <div id="footerSide2" class="flex flex-col items-center justify-center shrink-0 bg-[#080e13]/85 py-4 px-6 rounded-2xl border border-teal-500/30 shadow-xl order-1" translate="no" dir="ltr">
+                        <div class="flex items-center justify-center gap-3.5">
+                            <div class="text-right">
+                                <div class="text-teal-300 text-xl font-black tracking-tight drop-shadow-[0_0_15px_rgba(45,212,191,0.8)] leading-none">نماء</div>
+                                <div class="text-teal-300 text-[11px] font-black tracking-widest uppercase drop-shadow-[0_0_12px_rgba(45,212,191,0.7)] mt-0.5">NAMAA</div>
+                            </div>
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-800 to-teal-600 text-white flex items-center justify-center text-xl shadow-inner border border-teal-400/30">
+                                🌱
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center flex-1 px-4 order-2" translate="no" dir="ltr">
+                        <p class="text-[11px] md:text-xs text-teal-300/80 font-extrabold uppercase tracking-[0.25em] mb-1.5 drop-shadow-[0_0_6px_rgba(45,212,191,0.4)]">DESIGNED & DEVELOPED BY:</p>
+                        <p class="text-2xl md:text-3xl font-black text-sky-400 tracking-wider drop-shadow-[0_0_15px_rgba(56,189,248,0.7)] font-['Inter']">MOHANAD MIQDAD</p>
+                    </div>
+
+                    <div id="footerSide1" class="flex flex-col items-center shrink-0 gap-2 bg-[#080e13]/85 py-4 px-6 rounded-2xl border border-teal-500/30 shadow-xl order-3">
+                        <div class="flex items-center gap-4 text-xl text-teal-300">
+                            <a href="#" class="hover:text-white transition duration-200 drop-shadow-[0_0_8px_rgba(45,212,191,0.6)]"><i class="fa-brands fa-whatsapp"></i></a>
+                            <a href="#" class="hover:text-white transition duration-200 drop-shadow-[0_0_8px_rgba(45,212,191,0.6)]"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#" class="hover:text-white transition duration-200 drop-shadow-[0_0_8px_rgba(45,212,191,0.6)]"><i class="fa-brands fa-telegram"></i></a>
+                            <a href="#" class="hover:text-white transition duration-200 drop-shadow-[0_0_8px_rgba(45,212,191,0.6)]"><i class="fa-solid fa-envelope"></i></a>
+                        </div>
+                        <span id="footerContactTitle" class="text-xs md:text-sm font-extrabold text-slate-300 uppercase tracking-widest pt-1 border-t border-teal-500/30 w-full text-center flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-headset text-teal-400 text-xs"></i> Contact Us
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal: Product Details -->
+    <div id="productDetailsModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-3">
+        <div class="bg-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[94vh]">
+            <div class="bg-teal-900 text-white px-5 py-3.5 flex justify-between items-center shrink-0">
+                <button onclick="closeProductModal()" class="text-slate-300 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="font-extrabold text-sm flex items-center gap-2"><span id="lblModalHeaderTitle">Product Details & Order</span> <i class="fa-solid fa-circle-info text-amber-400"></i></h3>
+            </div>
+            <div class="p-5 space-y-3.5 overflow-y-auto">
+                <div class="h-72 rounded-2xl overflow-hidden bg-slate-200 border border-slate-200 relative">
+                    <img id="modalProdImageBg" src="" alt="" class="absolute inset-0 w-full h-full object-cover blur-xl scale-125 opacity-70">
+                    <img id="modalProdImage" src="" alt="" class="relative w-full h-full object-contain">
+                    <span id="modalProdCategory" class="absolute top-2 right-2 text-[11px] font-bold text-teal-900 bg-white/95 backdrop-blur-md px-2 py-0.5 rounded-md border border-teal-200 shadow-sm"></span>
+                </div>
+                <div><h2 id="modalProdTitle" class="text-lg md:text-xl font-black text-slate-900 leading-snug"></h2></div>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80">
+                    <p id="lblDescTitle" class="text-xs font-bold text-slate-400 mb-1 flex items-center gap-1"><i class="fa-solid fa-align-left text-teal-700"></i> Description:</p>
+                    <p id="modalProdDesc" class="text-sm text-slate-700 leading-relaxed font-semibold line-clamp-6"></p>
+                </div>
+                <div class="grid grid-cols-2 gap-3 text-sm font-bold bg-amber-50/70 p-3.5 rounded-xl border border-amber-200/60">
+                    <div><span id="lblPriceTitle" class="text-xs text-slate-500 block mb-0.5">Price:</span><span id="modalProdPrice" class="text-teal-900 font-black text-base"></span></div>
+                    <div><span id="lblSellerTitle" class="text-xs text-slate-500 block mb-0.5">Seller:</span><span id="modalProdStudent" class="text-slate-900 font-black truncate block text-base"></span></div>
+                </div>
+                <a id="modalWhatsappBtn" href="#" target="_blank" rel="noopener" class="w-full py-3.5 bg-teal-800 hover:bg-teal-900 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition shadow-sm">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> <span id="lblBtnOrderWa">Order via WhatsApp 💬</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Add Product -->
+    <div id="addModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center hidden p-3">
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[94vh]">
+            <div class="bg-teal-900 text-white px-4 py-2.5 flex justify-between items-center shrink-0">
+                <button onclick="closeAddModal()" class="text-slate-300 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
+                <h3 id="modalAddTitle" class="font-extrabold text-xs flex items-center gap-2">Add New Product <i class="fa-solid fa-plus-circle text-amber-400"></i></h3>
+            </div>
+            <form onsubmit="handleProductSubmit(event)" class="p-3 space-y-1.5 overflow-y-auto">
+                <div>
+                    <label id="lblStudentName" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1"><i class="fa-solid fa-user text-teal-800"></i> Seller Name *</label>
+                    <input type="text" id="studentName" required maxlength="60" placeholder="..." class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold">
+                </div>
+                <div>
+                    <label id="lblWhatsapp" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1"><i class="fa-brands fa-whatsapp text-teal-800"></i> WhatsApp Number *</label>
+                    <input type="text" id="whatsappNumber" required readonly placeholder="0591234567" class="w-full px-2.5 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-xs focus:outline-none font-semibold text-slate-600">
+                </div>
+                <div>
+                    <label id="lblProductTitle" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1"><i class="fa-solid fa-box text-teal-800"></i> Product Title *</label>
+                    <input type="text" id="productTitle" required maxlength="100" placeholder="..." class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold">
+                </div>
+                <div>
+                    <label id="lblCategory" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1"><i class="fa-solid fa-folder-open text-teal-800"></i> Category *</label>
+                    <select id="productCategory" required class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold"></select>
+                </div>
+                <div>
+                    <label id="lblPrice" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1"><i class="fa-solid fa-tag text-teal-800"></i> Price *</label>
+                    <input type="text" id="productPrice" required maxlength="30" placeholder="20 ₪" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold">
+                </div>
+                <div>
+                    <label id="lblImage" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1"><i class="fa-solid fa-image text-teal-800"></i> Product Image *</label>
+                    <input type="file" id="productImageFile" accept="image/*" onchange="handleImageUpload(event)" class="w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-teal-50 file:text-teal-800 hover:file:bg-teal-100">
+                </div>
+                <div id="imagePreviewContainer" class="hidden"><img id="imagePreview" src="" class="h-12 w-full object-contain bg-slate-100 rounded-lg border border-slate-200"></div>
+                <div>
+                    <label id="lblDesc" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1"><i class="fa-solid fa-align-left text-teal-800"></i> Product Description</label>
+                    <textarea id="productDesc" rows="2" maxlength="600" placeholder="..." class="w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold resize-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-1.5 border-t border-slate-100">
+                    <button type="submit" id="btnPublish" class="px-4 py-1.5 bg-teal-800 text-white rounded-lg text-xs font-bold hover:bg-teal-900 shadow-sm transition flex items-center gap-1.5 disabled:opacity-60"><i class="fa-solid fa-circle-check"></i> Publish Product</button>
+                    <button type="button" id="btnCancel" onclick="closeAddModal()" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 transition"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: My Products - Login -->
+    <div id="myAuthModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-100">
+            <div class="bg-teal-900 text-white p-4 flex justify-between items-center">
+                <button onclick="closeMyAuthModal()" class="text-slate-300 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+                <h3 id="myAuthTitle" class="font-bold text-xs flex items-center gap-2">Manage My Products <i class="fa-solid fa-store text-amber-400"></i></h3>
+            </div>
+            <form onsubmit="handleMyAuth(event)" class="p-6 space-y-4">
+                <div>
+                    <label id="lblMyPhone" class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5"><i class="fa-brands fa-whatsapp text-teal-800"></i> WhatsApp number *</label>
+                    <input type="text" id="myPhoneInput" required inputmode="tel" oninput="onMyPhoneInput()" placeholder="0591234567" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold">
+                </div>
+                <p id="myAuthHint" class="text-[11px] text-slate-500 font-semibold leading-snug"></p>
+                <div>
+                    <label id="lblMyPass" class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-key text-teal-800"></i> Password (4-6 characters) *</label>
+                    <input type="password" id="myPassInput" required maxlength="6" autocomplete="off" placeholder="****" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold tracking-widest">
+                </div>
+                <div id="myConfirmWrap" class="hidden">
+                    <label id="lblMyConfirm" class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-teal-800"></i> Confirm password *</label>
+                    <input type="password" id="myConfirmInput" maxlength="6" autocomplete="off" placeholder="****" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold tracking-widest">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="submit" id="btnMyAuthSubmit" class="px-5 py-2 bg-teal-800 text-white rounded-xl text-xs font-bold hover:bg-teal-900 shadow-sm transition flex items-center gap-1.5 disabled:opacity-60"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+                    <button type="button" id="btnMyAuthCancel" onclick="closeMyAuthModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-200">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: My Products - list -->
+    <div id="myProductsModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[90vh]">
+            <div class="bg-teal-900 text-white p-4 flex justify-between items-center">
+                <button onclick="closeMyProductsModal()" class="text-slate-300 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+                <div class="text-right rtl:text-left">
+                    <h3 id="myPanelTitle" class="font-bold text-sm flex items-center gap-2">My Products <i class="fa-solid fa-store text-amber-400"></i></h3>
+                    <p class="text-[11px] text-teal-200 font-semibold mt-0.5"><span id="myPanelPhoneLabel">WhatsApp:</span> <span id="myProductsPhone" dir="ltr"></span></p>
+                </div>
+            </div>
+            <div class="p-4 overflow-y-auto space-y-3">
+                <div id="myProductsList" class="space-y-3"></div>
+                <p id="myProductsEmpty" class="hidden text-center text-xs text-slate-400 font-semibold py-8">No products with this number in this section.</p>
+            </div>
+            <div class="p-4 border-t border-slate-100 flex justify-end">
+                <button onclick="logoutMyProducts()" id="btnMyLogout" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-200 transition flex items-center gap-1.5"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Product -->
+    <div id="editModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center hidden p-3">
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-100 flex flex-col max-h-[94vh]">
+            <div class="bg-teal-900 text-white px-4 py-2.5 flex justify-between items-center shrink-0">
+                <button onclick="closeEditModal()" class="text-slate-300 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
+                <h3 id="editModalTitle" class="font-extrabold text-xs flex items-center gap-2">Edit Product <i class="fa-solid fa-pen text-amber-400"></i></h3>
+            </div>
+            <form onsubmit="handleEditSubmit(event)" class="p-3 space-y-1.5 overflow-y-auto">
+                <div>
+                    <label id="lblEditStudent" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1.5"><i class="fa-solid fa-user text-teal-800"></i> Seller Name *</label>
+                    <input type="text" id="editStudentName" required maxlength="60" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold">
+                </div>
+                <div>
+                    <label id="lblEditTitle" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1.5"><i class="fa-solid fa-box text-teal-800"></i> Product Title *</label>
+                    <input type="text" id="editProductTitle" required maxlength="100" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold">
+                </div>
+                <div>
+                    <label id="lblEditCategory" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1.5"><i class="fa-solid fa-folder-open text-teal-800"></i> Category *</label>
+                    <select id="editProductCategory" required class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold"></select>
+                </div>
+                <div>
+                    <label id="lblEditPrice" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1.5"><i class="fa-solid fa-tag text-teal-800"></i> Price *</label>
+                    <input type="text" id="editProductPrice" required maxlength="30" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold">
+                </div>
+                <div>
+                    <label id="lblEditImage" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1.5"><i class="fa-solid fa-image text-teal-800"></i> Product Image</label>
+                    <input type="file" id="editImageFile" accept="image/*" onchange="handleEditImageUpload(event)" class="w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-teal-50 file:text-teal-800 hover:file:bg-teal-100">
+                    <div class="mt-1.5"><img id="editImagePreview" src="" class="h-12 w-full object-contain bg-slate-100 rounded-lg border border-slate-200"></div>
+                </div>
+                <div>
+                    <label id="lblEditDesc" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1.5"><i class="fa-solid fa-align-left text-teal-800"></i> Product Description</label>
+                    <textarea id="editProductDesc" rows="2" maxlength="600" class="w-full px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold resize-none"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-1.5">
+                    <button type="submit" id="btnSaveEdit" class="px-4 py-1.5 bg-teal-800 text-white rounded-lg text-xs font-bold hover:bg-teal-900 shadow-sm transition flex items-center gap-1.5 disabled:opacity-60"><i class="fa-solid fa-circle-check"></i> Save Changes</button>
+                    <button type="button" id="btnEditCancel" onclick="closeEditModal()" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 transition"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Admin Auth -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl border border-slate-100">
+            <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
+                <button onclick="closeAdminAuthModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+                <h3 id="adminAuthModalTitle" class="font-bold text-xs flex items-center gap-2">Admin Login <i class="fa-solid fa-lock text-amber-400"></i></h3>
+            </div>
+            <form onsubmit="handleAdminAuth(event)" class="p-6 space-y-4">
+                <div>
+                    <label id="lblAdminPass" class="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-key text-slate-800"></i> Admin Password</label>
+                    <input type="password" id="adminPasswordInput" required placeholder="******" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-slate-800 focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="submit" id="btnAdminLogin" class="px-5 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 shadow-sm flex items-center gap-1.5 disabled:opacity-60"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+                    <button type="button" id="btnAdminAuthCancel" onclick="closeAdminAuthModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-200">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // إعدادات Firebase المحدثة والمربوطة بمشروعك (Namma Platform)
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyCCB5ZuLvFSTFQTfFpEgWBg-GkXoZnVFdc",
+            authDomain: "namma-platform-69d7f.firebaseapp.com",
+            projectId: "namma-platform-69d7f",
+            storageBucket: "namma-platform-69d7f.firebasestorage.app",
+            messagingSenderId: "392498027366",
+            appId: "1:392498027366:web:b9d8a087419d37f13746a7"
+        };
+        const ADMIN_EMAIL = "admin@namaa.example";
+        const STUDENT_EMAIL_DOMAIN = "students.namaa.example";
+        const FIREBASE_VERSION = "10.7.1";
+        const DEFAULT_COUNTRY_CODE = "970";
+        const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&q=80';
+
+        const translations = {
+            ar: {
+                dir: 'rtl',
+                portalLangBtn: 'English',
+                portalSlogan1: 'من طلابنا .. إلى مجتمعنا',
+                portalSlogan2: 'مساق التجارة الإلكترونية',
+                portalBoysSubtitle: 'قسم الطلاب',
+                portalGirlsSubtitle: 'قسم الطالبات',
+                portalInstructions: 'اختر القسم المطلوب ثم أدخل الرمز الخاص للوصول إلى المنتجات',
+                pinModalTitleBoys: 'M-STUDENTS (قسم الطلاب)',
+                pinModalTitleGirls: 'F-STUDENTS (قسم الطالبات)',
+                pinModalLabel: 'يرجى إدخال رمز الدخول الخاص بالقسم',
+                pinModalBtn: 'دخول المنصة',
+                errPinWrong: 'رمز الدخول غير صحيح!',
+                headerSlogan: 'من طلابنا .. إلى مجتمعنا',
+                appLangBtn: 'English',
+                btnMyProducts: 'إدارة منتجاتي',
+                btnAddProduct: 'إضافة منتج جديد',
+                btnAdminPanel: 'لوحة الإشراف 🔐',
+                badgeBoys: 'قسم M-STUDENTS (معرض منتجات الطلاب)',
+                badgeGirls: 'قسم F-STUDENTS (معرض منتجات الطالبات)',
+                heroImageBadge: 'إبداعات طلابية 🌿',
+                heroTitle: 'من شغف المواهب.. إلى صناعة الأثر',
+                heroSubtitle: 'منصة التجارة الإلكترونية الخاصة بطلاب وطالبات المساق، حيث يمكنك بيع منتجاتك، دعم زملائك، واكتشاف إبداعاتهم بكل سهولة.',
+                searchPlaceholder: 'ابحث عن منتج، فئة، أو طالب...',
+                profileStoreLabel: 'متجر الطالب:',
+                profileProductCount: 'عدد المنتجات:',
+                btnProfileContact: 'تواصل مع البائع',
+                btnProfileShowAll: 'عرض جميع منتجات القسم',
+                catSectionTitle: 'تصفح حسب الفئات',
+                catAgri: 'منتجات زراعية',
+                catFood: 'مواد غذائية',
+                catHome: 'مستلزمات منزلية',
+                catClothes: 'ملابس',
+                catAcc: 'إكسسوارات',
+                catCrafts: 'أعمال يدوية',
+                catOther: 'أخرى',
+                catAll: 'جميع الفئات',
+                btnShowAllHeader: 'عرض الكل',
+                latestProductsTitle: 'أحدث المنتجات',
+                loadingProducts: 'جاري تحميل المنتجات...',
+                emptyStateTitle: 'لا توجد منتجات حالياً في هذا القسم',
+                emptyStateDesc: 'كن أول من يضيف منتجاً جديداً!',
+                cardStudentLabel: 'الطالب/ة:',
+                btnViewDetails: 'عرض التفاصيل والطلب',
+                noDescription: 'لا يوجد وصف إضافي لهذا المنتج.',
+                btnAdminChangePass: 'تغيير كلمة المرور',
+                btnAdminClose: 'إغلاق اللوحة',
+                adminHeaderTitle: 'لوحة تحكم المشرف',
+                adminHeaderSubtitle: 'إدارة منتجات القسم الحالي وحذفها',
+                statCategoriesLabel: 'التصنيفات المتاحة',
+                statStudentsLabel: 'عدد الطلاب النشطين',
+                statProductsLabel: 'إجمالي المنتجات',
+                thStudent: 'اسم الطالب/ة',
+                thCategoryCol: 'التصنيف',
+                thProduct: 'اسم المنتج',
+                thPrice: 'السعر',
+                thWhatsapp: 'رقم الواتساب',
+                thActions: 'الإجراءات',
+                btnDelete: 'حذف',
+                footerContactTitle: 'Contact Us',
+                modalAddTitle: 'إضافة منتج جديد',
+                lblStudentName: 'اسم الطالب/ة البائع *',
+                lblWhatsapp: 'رقم الواتساب للتواصل *',
+                lblProductTitle: 'اسم المنتج *',
+                lblCategory: 'الفئة *',
+                lblPrice: 'السعر *',
+                lblImage: 'صورة المنتج *',
+                lblDesc: 'وصف المنتج',
+                btnPublish: 'نشر المنتج',
+                btnCancel: 'إلغاء',
+                adminAuthModalTitle: 'دخول المشرف',
+                lblAdminPass: 'كلمة المرور الخاصة بالمشرف',
+                btnAdminLogin: 'دخول',
+                btnAdminAuthCancel: 'إلغاء',
+                lblModalHeaderTitle: 'تفاصيل المنتج والطلب',
+                lblDescTitle: 'الوصف:',
+                lblBtnOrderWa: 'الطلب عبر الواتساب 💬',
+                lblPriceTitle: 'السعر:',
+                lblSellerTitle: 'الطالب البائع:',
+                myAuthTitle: 'إدارة منتجاتي',
+                myAuthPhoneLabel: 'رقم الواتساب الذي نشرت به منتجاتك *',
+                myAuthPassLabel: 'كلمة المرور (من 4 إلى 6 خانات) *',
+                myAuthConfirmLabel: 'تأكيد كلمة المرور *',
+                myAuthHintDefault: 'اكتب رقم الواتساب لتبدأ.',
+                myAuthHintChecking: 'جارٍ التحقق من الرقم...',
+                myAuthHintNew: 'هذا الرقم غير مسجّل بعد. اختر كلمة مرور الآن واحفظها جيدًا، فستحتاجها لنشر منتجاتك وتعديلها وحذفها.',
+                myAuthHintLogin: 'أدخل كلمة المرور التي اخترتها سابقًا.',
+                myAuthBtnLogin: 'دخول',
+                myAuthBtnCreate: 'تسجيل كلمة المرور والدخول',
+                myAuthCancel: 'إلغاء',
+                errInvalidPhone: 'رقم الواتساب غير صحيح.',
+                errPassLen: 'كلمة المرور يجب أن تكون من 4 إلى 6 خانات.',
+                errPassMismatch: 'كلمتا المرور غير متطابقتين.',
+                errWrongPass: 'كلمة المرور غير صحيحة!',
+                errLocked: 'محاولات خاطئة كثيرة. حاول مرة أخرى بعد قليل.',
+                errNetwork: 'تعذّر الاتصال. تحقق من الإنترنت وحاول مرة أخرى.',
+                errAlreadyRegistered: 'هذا الرقم مسجّل مسبقًا بكلمة مرور أخرى. إن نسيتها فتواصل مع المشرف.',
+                errConfig: 'إعداد Firebase غير مكتمل (فعّل Email/Password من Authentication).',
+                msgOfflineBlock: 'لا يمكن تنفيذ هذا الإجراء الآن لعدم توفر الاتصال بالخادم.',
+                msgAccountCreated: 'تم تسجيل كلمة المرور. احفظها جيدًا!',
+                myPanelTitle: 'منتجاتي',
+                myPanelPhoneLabel: 'رقم الواتساب:',
+                btnMyLogout: 'تسجيل الخروج',
+                myEmpty: 'لا توجد منتجات بهذا الرقم في هذا القسم.',
+                btnEdit: 'تعديل',
+                msgDeleteConfirm: 'هل أنت متأكد من حذف هذا المنتج؟',
+                msgDeleteFailed: 'تعذّر حذف المنتج. حاول مرة أخرى.',
+                editModalTitle: 'تعديل المنتج',
+                editImageHint: 'اترك الصورة كما هي إن لم ترد تغييرها.',
+                btnSaveEdit: 'حفظ التعديلات',
+                msgEditSaved: 'تم حفظ التعديلات بنجاح!',
+                msgSaveFailed: 'تعذّر حفظ التعديلات. حاول مرة أخرى.',
+                msgPublished: 'تم نشر المنتج بنجاح ✅',
+                msgDeleted: 'تم حذف المنتج بنجاح',
+                msgAdminIn: 'تم تسجيل دخول المشرف بنجاح',
+                msgResetDone: 'تم إعادة ضبط الحساب بنجاح',
+                msgPublishFailed: 'لم يتم نشر المنتج. تحقق من الاتصال وحاول مرة أخرى.',
+                errImageType: 'الرجاء اختيار ملف صورة.',
+                errImageProcess: 'تعذّر معالجة الصورة. جرّب صورة أخرى.',
+                adminAccountsTitle: 'حسابات الطلاب (إعادة ضبط كلمة المرور)',
+                adminAccountsEmpty: 'لا توجد حسابات مسجّلة بعد.',
+                btnResetPass: 'إعادة ضبط',
+                msgResetConfirm: 'هل تريد إعادة ضبط كلمة مرور هذا الرقم؟ سيتمكن الطالب من تسجيل كلمة مرور جديدة.',
+                msgResetCloudHint: 'لإكمال إعادة الضبط: احذف هذا المستخدم أيضًا من Firebase ← Authentication ← Users، ثم يسجّل الطالب كلمة مرور جديدة.',
+                promptNewAdminPass: 'أدخل كلمة المرور الجديدة للمشرف:',
+                msgAdminPassUpdated: 'تم تحديث كلمة المرور بنجاح!',
+                msgAdminPassShort: 'كلمة مرور المشرف يجب ألا تقل عن 6 خانات.',
+                bannerLocal: 'وضع تجريبي: المنتجات تُحفظ على هذا الجهاز فقط ولن يراها الآخرون.',
+                bannerOffline: 'تعذّر الاتصال بالخادم. تحقق من الإنترنت ثم أعد تحميل الصفحة.',
+                btnReload: 'إعادة التحميل',
+                waGreeting: (n, t, p) => `مرحباً ${n}👋\nأود طلب المنتج التالي من منصة نماء:\n- المنتج: *${t}*\n- السعر: *${p}*\n\nهل المنتج متوفر حالياً لتأكيد الطلب؟`,
+                categories: [
+                    {val: 'Agricultural', name: 'منتجات زراعية'},
+                    {val: 'Food', name: 'مواد غذائية'},
+                    {val: 'Household', name: 'مستلزمات منزلية'},
+                    {val: 'Clothing', name: 'ملابس'},
+                    {val: 'Accessories', name: 'إكسسوارات'},
+                    {val: 'Handmade', name: 'أعمال يدوية'},
+                    {val: 'Other', name: 'أخرى'}
+                ]
+            },
+            en: {
+                dir: 'ltr',
+                portalLangBtn: 'العربية',
+                portalSlogan1: 'From Our Students .. To Our Community',
+                portalSlogan2: 'E-Commerce Course',
+                portalBoysSubtitle: 'Boys Section',
+                portalGirlsSubtitle: 'Girls Section',
+                portalInstructions: 'Select a section and enter the access pin to browse products',
+                pinModalTitleBoys: 'M-STUDENTS (Boys Section)',
+                pinModalTitleGirls: 'F-STUDENTS (Girls Section)',
+                pinModalLabel: 'Please enter the access code for this section',
+                pinModalBtn: 'Enter Platform',
+                errPinWrong: 'Incorrect access code!',
+                headerSlogan: 'From Our Students .. To Our Community',
+                appLangBtn: 'العربية',
+                btnMyProducts: 'My Products',
+                btnAddProduct: 'Add New Product',
+                btnAdminPanel: 'Admin Panel 🔐',
+                badgeBoys: 'M-STUDENTS Section (Boys Marketplace)',
+                badgeGirls: 'F-STUDENTS Section (Girls Marketplace)',
+                heroImageBadge: 'Student Creations 🌿',
+                heroTitle: 'From Talent Passion.. To Making an Impact',
+                heroSubtitle: 'The E-Commerce platform for course students to showcase products, support peers, and discover creations easily.',
+                searchPlaceholder: 'Search product, category, or student...',
+                profileStoreLabel: "Student's Store:",
+                profileProductCount: 'Total Products:',
+                btnProfileContact: 'Contact Seller',
+                btnProfileShowAll: 'View All Section Products',
+                catSectionTitle: 'Browse by Category',
+                catAgri: 'Agricultural',
+                catFood: 'Food',
+                catHome: 'Household',
+                catClothes: 'Clothing',
+                catAcc: 'Accessories',
+                catCrafts: 'Handmade',
+                catOther: 'Other',
+                catAll: 'All Categories',
+                btnShowAllHeader: 'Show All',
+                latestProductsTitle: 'Latest Products',
+                loadingProducts: 'Loading products...',
+                emptyStateTitle: 'No products currently in this section',
+                emptyStateDesc: 'Be the first to add a new product!',
+                cardStudentLabel: 'Student:',
+                btnViewDetails: 'View Details & Order',
+                noDescription: 'No additional description for this product.',
+                btnAdminChangePass: 'Change Password',
+                btnAdminClose: 'Close Dashboard',
+                adminHeaderTitle: 'Admin Dashboard',
+                adminHeaderSubtitle: 'Manage and delete products in current section',
+                statCategoriesLabel: 'Available Categories',
+                statStudentsLabel: 'Active Students',
+                statProductsLabel: 'Total Products',
+                thStudent: 'Student Name',
+                thCategoryCol: 'Category',
+                thProduct: 'Product Title',
+                thPrice: 'Price',
+                thWhatsapp: 'WhatsApp',
+                thActions: 'Actions',
+                btnDelete: 'Delete',
+                footerContactTitle: 'Contact Us',
+                modalAddTitle: 'Add New Product',
+                lblStudentName: 'Seller Name *',
+                lblWhatsapp: 'WhatsApp Number *',
+                lblProductTitle: 'Product Title *',
+                lblCategory: 'Category *',
+                lblPrice: 'Price *',
+                lblImage: 'Product Image *',
+                lblDesc: 'Product Description',
+                btnPublish: 'Publish Product',
+                btnCancel: 'Cancel',
+                adminAuthModalTitle: 'Admin Login',
+                lblAdminPass: 'Admin Password',
+                btnAdminLogin: 'Login',
+                btnAdminAuthCancel: 'Cancel',
+                lblModalHeaderTitle: 'Product Details & Order',
+                lblDescTitle: 'Description:',
+                lblBtnOrderWa: 'Order via WhatsApp 💬',
+                lblPriceTitle: 'Price:',
+                lblSellerTitle: 'Student Seller:',
+                myAuthTitle: 'Manage My Products',
+                myAuthPhoneLabel: 'WhatsApp number used on your products *',
+                myAuthPassLabel: 'Password (4-6 characters) *',
+                myAuthConfirmLabel: 'Confirm password *',
+                myAuthHintDefault: 'Enter your WhatsApp number to start.',
+                myAuthHintChecking: 'Checking the number...',
+                myAuthHintNew: 'This number is not registered yet. Choose a password now and keep it safe: you will need it to publish, edit and delete your products.',
+                myAuthHintLogin: 'Enter the password you chose before.',
+                myAuthBtnLogin: 'Login',
+                myAuthBtnCreate: 'Set password & enter',
+                myAuthCancel: 'Cancel',
+                errInvalidPhone: 'Invalid WhatsApp number.',
+                errPassLen: 'Password must be 4 to 6 characters.',
+                errPassMismatch: 'Passwords do not match.',
+                errWrongPass: 'Incorrect password!',
+                errLocked: 'Too many wrong attempts. Please try again in a moment.',
+                errNetwork: 'Could not connect. Check your internet and try again.',
+                errAlreadyRegistered: 'This number is already registered with a different password. If you forgot it, contact the admin.',
+                errConfig: 'Firebase setup is incomplete (enable Email/Password in Authentication).',
+                msgOfflineBlock: 'This action is not available right now because there is no connection to the server.',
+                msgAccountCreated: 'Password saved. Keep it safe!',
+                myPanelTitle: 'My Products',
+                myPanelPhoneLabel: 'WhatsApp:',
+                btnMyLogout: 'Log out',
+                myEmpty: 'No products with this number in this section.',
+                btnEdit: 'Edit',
+                msgDeleteConfirm: 'Are you sure you want to delete this product?',
+                msgDeleteFailed: 'Could not delete the product. Please try again.',
+                editModalTitle: 'Edit Product',
+                editImageHint: 'Leave the image as is if you do not want to change it.',
+                btnSaveEdit: 'Save Changes',
+                msgEditSaved: 'Changes saved successfully!',
+                msgSaveFailed: 'Could not save the changes. Please try again.',
+                msgPublished: 'Product published successfully ✅',
+                msgDeleted: 'Product deleted successfully',
+                msgAdminIn: 'Admin logged in successfully',
+                msgResetDone: 'Account reset successfully',
+                msgPublishFailed: 'The product was NOT published. Check your connection and try again.',
+                errImageType: 'Please choose an image file.',
+                errImageProcess: 'Could not process the image. Try another one.',
+                adminAccountsTitle: 'Student Accounts (Reset Password)',
+                adminAccountsEmpty: 'No registered accounts yet.',
+                btnResetPass: 'Reset',
+                msgResetConfirm: 'Reset the password for this number? The student will be able to set a new password.',
+                msgResetCloudHint: 'To finish the reset, also delete this user in Firebase > Authentication > Users. Then the student can set a new password.',
+                promptNewAdminPass: 'Enter new admin password:',
+                msgAdminPassUpdated: 'Password updated successfully!',
+                msgAdminPassShort: 'The admin password must be at least 6 characters.',
+                bannerLocal: 'Demo mode: products are saved on this device only and others will not see them.',
+                bannerOffline: 'Could not connect to the server. Check your internet and reload the page.',
+                btnReload: 'Reload',
+                waGreeting: (n, t, p) => `Hello ${n}👋\nI would like to order the following product from NAMAA platform:\n- Product: *${t}*\n- Price: *${p}*\n\nIs it available right now to confirm?`,
+                categories: [
+                    {val: 'Agricultural', name: 'Agricultural'},
+                    {val: 'Food', name: 'Food'},
+                    {val: 'Household', name: 'Household'},
+                    {val: 'Clothing', name: 'Clothing'},
+                    {val: 'Accessories', name: 'Accessories'},
+                    {val: 'Handmade', name: 'Handmade'},
+                    {val: 'Other', name: 'Other'}
+                ]
+            }
+        };
+
+        let currentLang = 'en';
+        const zoomLevels = [0.5, 0.75, 1.0];
+        let zoomIndex = 1;
+
+        let products = [];
+        let productsLoading = false;
+        let activeSection = null;
+        let pendingSectionTarget = '';
+        let currentCategory = 'all';
+        let currentStudentFilter = null;
+
+        let uploadedImageBase64 = '';
+        let editImageBase64 = '';
+        let editingProductId = null;
+        let pendingProductId = null;
+        let pendingAfterLogin = null;
+
+        let currentSellerKey = null;   
+        let adminSession = false;
+
+        let mode = 'local';            
+        let backend = null;
+        let backendReady = null;
+        let unsubscribeProducts = null;
+        let phoneCheckTimer = null;
+        let phoneCheckToken = 0;
+
+        const el = id => document.getElementById(id);
+        const isFirebaseConfigured = () => !!FIREBASE_CONFIG.apiKey && !String(FIREBASE_CONFIG.apiKey).startsWith('PASTE');
+        const studentEmailRegex = new RegExp('^(\\d+)@' + STUDENT_EMAIL_DOMAIN.replace(/\./g, '\\.') + '$');
+
+        function setText(id, value) { const n = el(id); if (n) n.textContent = value; }
+        function setHTML(id, html) { const n = el(id); if (n) n.innerHTML = html; }   
+
+        function showToast(message, type = 'success') {
+            const container = el('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-slate-900 text-white border-teal-500/40 shadow-teal-500/10' : 'bg-red-950 text-white border-red-500/40 shadow-red-500/10';
+            const iconClass = type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-exclamation text-red-400';
+
+            toast.className = `toast-enter pointer-events-auto flex items-center gap-3 p-3.5 rounded-2xl border shadow-xl backdrop-blur-xl ${bgClass}`;
+            
+            const icon = document.createElement('i');
+            icon.className = `fa-solid ${iconClass} text-base shrink-0`;
+            
+            const text = document.createElement('span');
+            text.className = 'text-xs font-bold leading-snug flex-1';
+            text.textContent = message;
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'text-slate-400 hover:text-white text-xs p-1 transition';
+            closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            closeBtn.onclick = () => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 200);
+            };
+
+            toast.appendChild(icon);
+            toast.appendChild(text);
+            toast.appendChild(closeBtn);
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(10px)';
+                    toast.style.transition = 'all 0.25s ease';
+                    setTimeout(() => toast.remove(), 250);
+                }
+            }, 3500);
+        }
+
+        function normalizePhone(raw) {
+            const d = String(raw || '').replace(/\D/g, '');
+            return d.length > 9 ? d.slice(-9) : d.replace(/^0+/, '');
+        }
+
+        function toWaNumber(raw) {
+            const d = String(raw || '').replace(/\D/g, '');
+            if (d.startsWith('00')) return d.slice(2);
+            if (d.startsWith('0') && d.length >= 9) return DEFAULT_COUNTRY_CODE + d.slice(1);
+            if (d.length === 9) return DEFAULT_COUNTRY_CODE + d;
+            return d;
+        }
+
+        function ownerOf(p) { return p.ownerKey || normalizePhone(p.whatsapp); }
+        function categoryLabel(val) {
+            const found = translations[currentLang].categories.find(c => c.val === val);
+            return found ? found.name : val;
+        }
+        function generateId() { return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+        function normalizeText(text) {
+            if (!text) return '';
+            return String(text).toLowerCase().replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').trim();
+        }
+
+        function makeIcon(cls) { const i = document.createElement('i'); i.className = cls; return i; }
+
+        async function sha256Hex(text) {
+            if (window.crypto && window.crypto.subtle) {
+                const buf = await window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+            let h1 = 5381, h2 = 52711;
+            for (let i = 0; i < text.length; i++) {
+                const c = text.charCodeAt(i);
+                h1 = ((h1 * 33) ^ c) >>> 0;
+                h2 = ((h2 * 33) ^ c) >>> 0;
+            }
+            return ('00000000' + h1.toString(16)).slice(-8) + ('00000000' + h2.toString(16)).slice(-8) + '-namaa-fallback';
+        }
+        function derivePassword(key, pass) { return sha256Hex(key + ':' + pass + ':namaa-v1'); }
+
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                if (!file || !file.type || !file.type.startsWith('image/')) { reject(new Error('type')); return; }
+                const reader = new FileReader();
+                reader.onerror = () => reject(new Error('read'));
+                reader.onload = () => {
+                    const img = new Image();
+                    img.onerror = () => reject(new Error('decode'));
+                    img.onload = () => {
+                        const render = (side, q) => {
+                            const scale = Math.min(1, side / Math.max(img.width, img.height));
+                            const w = Math.max(1, Math.round(img.width * scale));
+                            const h = Math.max(1, Math.round(img.height * scale));
+                            const canvas = document.createElement('canvas');
+                            canvas.width = w; canvas.height = h;
+                            const ctx = canvas.getContext('2d');
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillRect(0, 0, w, h);
+                            ctx.drawImage(img, 0, 0, w, h);
+                            return canvas.toDataURL('image/jpeg', q);
+                        };
+                        let side = 800, q = 0.72;
+                        let out = render(side, q);
+                        while (out.length > 350000 && (q > 0.35 || side > 400)) {
+                            if (q > 0.35) q = Math.round((q - 0.1) * 100) / 100; else side = Math.round(side * 0.8);
+                            out = render(side, q);
+                        }
+                        resolve(out);
+                    };
+                    img.src = reader.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function dynImport(url) { return new Function('u', 'return import(u)')(url); }
+
+        function withTimeout(promise, ms) {
+            return Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))]);
+        }
+
+        function authErrorMessage(err) {
+            const L = translations[currentLang];
+            switch (err && err.code) {
+                case 'wrong-password': return L.errWrongPass;
+                case 'locked': return L.errLocked;
+                case 'already-registered': return L.errAlreadyRegistered;
+                case 'config': return L.errConfig;
+                case 'offline': return L.msgOfflineBlock;
+                default: return L.errNetwork;
+            }
+        }
+
+        function createLocalBackend() {
+            const PRODUCTS_KEY = 'namaa_market_products_v25';
+            const ACCOUNTS_KEY = 'namaa_market_accounts_v1';
+            const ADMIN_KEY = 'namaa_market_admin_pass';
+            let all = [];
+            let accounts = {};
+            try { all = JSON.parse(localStorage.getItem(PRODUCTS_KEY) || '[]'); } catch (e) { all = []; }
+            try { accounts = JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '{}'); } catch (e) { accounts = {}; }
+            let listener = null, listenSection = null;
+            const attempts = {}, locked = {};
+            const saveProducts = () => localStorage.setItem(PRODUCTS_KEY, JSON.stringify(all));
+            const saveAccounts = () => localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+            const emit = () => { if (listener) listener(all.filter(p => p.section === listenSection)); };
+            return {
+                name: 'local',
+                listenProducts(section, cb) { listener = cb; listenSection = section; emit(); return () => { listener = null; }; },
+                async addProduct(p) { all.unshift(p); try { saveProducts(); } catch (e) { all.shift(); throw e; } emit(); },
+                async updateProduct(id, fields) {
+                    const p = all.find(x => x.id === id);
+                    if (!p) throw new Error('missing');
+                    const backup = Object.assign({}, p);
+                    Object.assign(p, fields);
+                    try { saveProducts(); } catch (e) { Object.assign(p, backup); throw e; }
+                    emit();
+                },
+                async deleteProduct(id) { all = all.filter(x => x.id !== id); saveProducts(); emit(); },
+                async accountExists(key) { return !!accounts[key]; },
+                async register(key, pass) { accounts[key] = await derivePassword(key, pass); saveAccounts(); },
+                async login(key, pass) {
+                    if (locked[key] && Date.now() < locked[key]) throw { code: 'locked' };
+                    const h = await derivePassword(key, pass);
+                    if (h !== accounts[key]) {
+                        attempts[key] = (attempts[key] || 0) + 1;
+                        if (attempts[key] >= 5) { locked[key] = Date.now() + 60000; attempts[key] = 0; throw { code: 'locked' }; }
+                        throw { code: 'wrong-password' };
+                    }
+                    attempts[key] = 0;
+                },
+                async signOutAll() {},
+                async adminLogin(pass) {
+                    const stored = localStorage.getItem(ADMIN_KEY) || 'gaza2026';
+                    if (pass !== stored) throw { code: 'wrong-password' };
+                },
+                async changeAdminPassword(newPass) { localStorage.setItem(ADMIN_KEY, newPass); },
+                async listAccounts() { return Object.keys(accounts); },
+                async resetAccount(key) { delete accounts[key]; saveAccounts(); }
+            };
+        }
+
+        function createOfflineBackend() {
+            const fail = async () => { throw { code: 'offline' }; };
+            return {
+                name: 'offline',
+                listenProducts() { return () => {}; },
+                addProduct: fail, updateProduct: fail, deleteProduct: fail,
+                accountExists: fail, register: fail, login: fail,
+                signOutAll: async () => {}, adminLogin: fail, changeAdminPassword: fail,
+                listAccounts: fail, resetAccount: fail
+            };
+        }
+
+        async function createCloudBackend() {
+            const base = 'https://www.gstatic.com/firebasejs/' + FIREBASE_VERSION + '/';
+            const [appM, fsM, authM] = await withTimeout(Promise.all([
+                dynImport(base + 'firebase-app.js'),
+                dynImport(base + 'firebase-firestore.js'),
+                dynImport(base + 'firebase-auth.js')
+            ]), 15000);
+
+            const app = appM.initializeApp(FIREBASE_CONFIG);
+            const db = fsM.getFirestore(app);
+            const auth = authM.getAuth(app);
+            const { collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, query, where, onSnapshot } = fsM;
+
+            authM.onAuthStateChanged(auth, user => handleAuthUser(user ? user.email : null));
+
+            const mapAuthError = e => {
+                const c = (e && e.code) || '';
+                if (c === 'auth/too-many-requests') return { code: 'locked' };
+                if (['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-login-credentials'].includes(c)) return { code: 'wrong-password' };
+                if (['auth/operation-not-allowed', 'auth/configuration-not-found', 'auth/invalid-api-key'].includes(c)) return { code: 'config' };
+                return { code: 'network', original: e };
+            };
+            const emailOf = key => key + '@' + STUDENT_EMAIL_DOMAIN;
+
+            return {
+                name: 'cloud',
+                listenProducts(section, cb) {
+                    const q = query(collection(db, 'products'), where('section', '==', section));
+                    return onSnapshot(q,
+                        snap => cb(snap.docs.map(d => Object.assign({}, d.data(), { id: d.id }))),
+                        err => { console.error('Firestore listen error', err); setMode('offline'); });
+                },
+                async addProduct(p) {
+                    const data = Object.assign({}, p);
+                    const id = data.id; delete data.id;
+                    await withTimeout(setDoc(doc(db, 'products', id), data), 20000);
+                },
+                async updateProduct(id, fields) { await withTimeout(updateDoc(doc(db, 'products', id), fields), 20000); },
+                async deleteProduct(id) { await withTimeout(deleteDoc(doc(db, 'products', id)), 20000); },
+                async accountExists(key) { const s = await withTimeout(getDoc(doc(db, 'accounts', key)), 15000); return s.exists(); },
+                async register(key, pass) {
+                    const email = emailOf(key);
+                    const pw = await derivePassword(key, pass);
+                    try {
+                        await authM.createUserWithEmailAndPassword(auth, email, pw);
+                    } catch (e) {
+                        if (e && e.code === 'auth/email-already-in-use') {
+                            try { await authM.signInWithEmailAndPassword(auth, email, pw); }
+                            catch (e2) { throw { code: 'already-registered' }; }
+                        } else {
+                            throw mapAuthError(e);
+                        }
+                    }
+                    try { await setDoc(doc(db, 'accounts', key), { createdAt: Date.now() }); } catch (e) { console.warn('accounts marker not saved', e); }
+                },
+                async login(key, pass) {
+                    const pw = await derivePassword(key, pass);
+                    try { await authM.signInWithEmailAndPassword(auth, emailOf(key), pw); }
+                    catch (e) { throw mapAuthError(e); }
+                },
+                async signOutAll() { await authM.signOut(auth); },
+                async adminLogin(pass) {
+                    try { await authM.signInWithEmailAndPassword(auth, ADMIN_EMAIL, pass); }
+                    catch (e) { throw mapAuthError(e); }
+                },
+                async changeAdminPassword(newPass) { await authM.updatePassword(auth.currentUser, newPass); },
+                async listAccounts() { const s = await getDocs(collection(db, 'accounts')); return s.docs.map(d => d.id); },
+                async resetAccount(key) { await deleteDoc(doc(db, 'accounts', key)); }
+            };
+        }
+
+        function handleAuthUser(email) {
+            const m = email ? email.match(studentEmailRegex) : null;
+            currentSellerKey = m ? m[1] : null;
+            adminSession = !!email && email === ADMIN_EMAIL;
+            if (!currentSellerKey) {
+                ['myProductsModal', 'editModal'].forEach(id => el(id).classList.add('hidden'));
+            }
+        }
+
+        function setMode(newMode) { mode = newMode; }
+
+        async function initBackend() {
+            if (!isFirebaseConfigured()) {
+                backend = createLocalBackend();
+                mode = 'local';
+            } else {
+                try {
+                    backend = await createCloudBackend();
+                    mode = 'cloud';
+                } catch (e) {
+                    console.error('Firebase could not be loaded', e);
+                    backend = createOfflineBackend();
+                    mode = 'offline';
+                }
+            }
+        }
+
+        function applyZoom(index) {
+            zoomIndex = index;
+            const targetZoom = zoomLevels[zoomIndex];
+            document.documentElement.style.zoom = targetZoom;
+            const percentText = 'Zoom: ' + Math.round(targetZoom * 100) + '%';
+            setText('portalZoomText', percentText);
+            setText('appZoomText', percentText);
+        }
+
+        function cycleZoom() { applyZoom((zoomIndex + 1) % zoomLevels.length); }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            applyLanguage();
+            if (activeSection) renderAll();
+        }
+
+        function applyLanguage() {
+            const L = translations[currentLang];
+            document.documentElement.setAttribute('dir', L.dir);
+            document.documentElement.setAttribute('lang', currentLang);
+
+            setHTML('footerContactTitle', `<i class="fa-solid fa-headset text-teal-400 text-xs"></i> ${L.footerContactTitle}`);
+            setText('portalLangBtn', L.portalLangBtn);
+            setHTML('portalSlogan1', `<i class="fa-solid fa-seedling text-emerald-400"></i> ${L.portalSlogan1}`);
+            setHTML('portalSlogan2', `<i class="fa-solid fa-graduation-cap text-teal-400"></i> ${L.portalSlogan2}`);
+            setText('portalBoysSubtitle', L.portalBoysSubtitle);
+            setText('portalGirlsSubtitle', L.portalGirlsSubtitle);
+            setHTML('portalInstructions', `<i class="fa-solid fa-circle-info text-teal-400"></i> ${L.portalInstructions}`);
+            setHTML('pinModalLabel', `<i class="fa-solid fa-shield-halved text-teal-800"></i> ${L.pinModalLabel}`);
+            setHTML('pinModalBtn', `<i class="fa-solid fa-right-to-bracket"></i> ${L.pinModalBtn}`);
+
+            setHTML('headerSlogan', `<i class="fa-solid fa-seedling text-emerald-600 text-[8px]"></i> ${L.headerSlogan}`);
+            setText('appLangBtn', L.appLangBtn);
+            setText('btnMyProducts', L.btnMyProducts);
+            setText('btnAddProduct', L.btnAddProduct);
+            setText('btnAdminPanel', L.btnAdminPanel);
+
+            setHTML('heroImageBadge', `<i class="fa-solid fa-seedling text-emerald-400"></i> ${L.heroImageBadge}`);
+            setHTML('heroTitle', `<i class="fa-solid fa-sparkles text-amber-500 text-2xl"></i> ${L.heroTitle}`);
+            setHTML('heroSubtitle', `<i class="fa-solid fa-bag-shopping text-teal-700"></i> ${L.heroSubtitle}`);
+            el('searchInput').placeholder = L.searchPlaceholder;
+
+            setHTML('profileStoreLabel', `<i class="fa-solid fa-shop text-teal-700"></i> ${L.profileStoreLabel}`);
+            setText('btnProfileContact', L.btnProfileContact);
+            setHTML('btnProfileShowAll', `<i class="fa-solid fa-arrow-rotate-left"></i> ${L.btnProfileShowAll}`);
+
+            setHTML('catSectionTitle', `<i class="fa-solid fa-grip text-teal-700"></i> ${L.catSectionTitle}`);
+            document.querySelector('.cat-name-agri').textContent = L.catAgri;
+            document.querySelector('.cat-name-food').textContent = L.catFood;
+            document.querySelector('.cat-name-home').textContent = L.catHome;
+            document.querySelector('.cat-name-clothes').textContent = L.catClothes;
+            document.querySelector('.cat-name-acc').textContent = L.catAcc;
+            document.querySelector('.cat-name-crafts').textContent = L.catCrafts;
+            document.querySelector('.cat-name-other').textContent = L.catOther;
+            document.querySelector('.cat-name-all').textContent = L.catAll;
+
+            setHTML('btnShowAllHeader', `<i class="fa-solid fa-list text-[10px]"></i> ${L.btnShowAllHeader} <i class="fa-solid fa-arrow-right rtl:rotate-180 text-[10px]"></i>`);
+            setHTML('latestProductsTitle', `<i class="fa-solid fa-sparkles text-amber-500"></i> ${L.latestProductsTitle}`);
+            setText('loadingText', L.loadingProducts);
+            setText('emptyStateTitle', L.emptyStateTitle);
+            setText('emptyStateDesc', L.emptyStateDesc);
+
+            setHTML('btnAdminChangePass', `<i class="fa-solid fa-key"></i> ${L.btnAdminChangePass}`);
+            setHTML('btnAdminClose', `<i class="fa-solid fa-xmark"></i> ${L.btnAdminClose}`);
+            setHTML('adminHeaderTitle', `${L.adminHeaderTitle} <i class="fa-solid fa-user-shield text-teal-800"></i>`);
+            setText('adminHeaderSubtitle', L.adminHeaderSubtitle);
+            setHTML('statCategoriesLabel', `<i class="fa-solid fa-folder-tree text-slate-700"></i> ${L.statCategoriesLabel}`);
+            setHTML('statStudentsLabel', `<i class="fa-solid fa-user-graduate text-amber-700"></i> ${L.statStudentsLabel}`);
+            setHTML('statProductsLabel', `<i class="fa-solid fa-boxes-stacked text-teal-700"></i> ${L.statProductsLabel}`);
+            setHTML('adminAccountsTitle', `<i class="fa-solid fa-users-gear text-teal-800"></i> ${L.adminAccountsTitle}`);
+
+            setText('lblModalHeaderTitle', L.lblModalHeaderTitle);
+            setHTML('lblDescTitle', `<i class="fa-solid fa-align-left text-teal-700"></i> ${L.lblDescTitle}`);
+            setText('lblBtnOrderWa', L.lblBtnOrderWa);
+            setText('lblPriceTitle', L.lblPriceTitle);
+            setText('lblSellerTitle', L.lblSellerTitle);
+
+            setHTML('thStudent', `<i class="fa-solid fa-user text-teal-400 me-1"></i> ${L.thStudent}`);
+            setHTML('thCategoryCol', `<i class="fa-solid fa-folder text-teal-400 me-1"></i> ${L.thCategoryCol}`);
+            setHTML('thProduct', `<i class="fa-solid fa-box text-teal-400 me-1"></i> ${L.thProduct}`);
+            setHTML('thPrice', `<i class="fa-solid fa-tag text-teal-400 me-1"></i> ${L.thPrice}`);
+            setHTML('thWhatsapp', `<i class="fa-brands fa-whatsapp text-teal-400 me-1"></i> ${L.thWhatsapp}`);
+            setHTML('thActions', `<i class="fa-solid fa-gears text-teal-400"></i> ${L.thActions}`);
+
+            setHTML('modalAddTitle', `${L.modalAddTitle} <i class="fa-solid fa-plus-circle text-amber-400"></i>`);
+            setHTML('lblStudentName', `<i class="fa-solid fa-user text-teal-800"></i> ${L.lblStudentName}`);
+            setHTML('lblWhatsapp', `<i class="fa-brands fa-whatsapp text-teal-800"></i> ${L.lblWhatsapp}`);
+            setHTML('lblProductTitle', `<i class="fa-solid fa-box text-teal-800"></i> ${L.lblProductTitle}`);
+            setHTML('lblCategory', `<i class="fa-solid fa-folder-open text-teal-800"></i> ${L.lblCategory}`);
+            setHTML('lblPrice', `<i class="fa-solid fa-tag text-teal-800"></i> ${L.lblPrice}`);
+            setHTML('lblImage', `<i class="fa-solid fa-image text-teal-800"></i> ${L.lblImage}`);
+            setHTML('lblDesc', `<i class="fa-solid fa-align-left text-teal-800"></i> ${L.lblDesc}`);
+            setHTML('btnPublish', `<i class="fa-solid fa-circle-check"></i> ${L.btnPublish}`);
+            setHTML('btnCancel', `<i class="fa-solid fa-xmark"></i> ${L.btnCancel}`);
+
+            setHTML('myAuthTitle', `${L.myAuthTitle} <i class="fa-solid fa-store text-amber-400"></i>`);
+            setHTML('lblMyPhone', `<i class="fa-brands fa-whatsapp text-teal-800"></i> ${L.myAuthPhoneLabel}`);
+            setHTML('lblMyPass', `<i class="fa-solid fa-key text-teal-800"></i> ${L.myAuthPassLabel}`);
+            setHTML('lblMyConfirm', `<i class="fa-solid fa-shield-halved text-teal-800"></i> ${L.myAuthConfirmLabel}`);
+            setText('btnMyAuthCancel', L.myAuthCancel);
+            setHTML('myPanelTitle', `${L.myPanelTitle} <i class="fa-solid fa-store text-amber-400"></i>`);
+            setText('myPanelPhoneLabel', L.myPanelPhoneLabel);
+            setHTML('btnMyLogout', `<i class="fa-solid fa-right-from-bracket"></i> ${L.btnMyLogout}`);
+            setText('myProductsEmpty', L.myEmpty);
+
+            setHTML('editModalTitle', `${L.editModalTitle} <i class="fa-solid fa-pen text-amber-400"></i>`);
+            setHTML('lblEditStudent', `<i class="fa-solid fa-user text-teal-800"></i> ${L.lblStudentName}`);
+            setHTML('lblEditTitle', `<i class="fa-solid fa-box text-teal-800"></i> ${L.lblProductTitle}`);
+            setHTML('lblEditCategory', `<i class="fa-solid fa-folder-open text-teal-800"></i> ${L.lblCategory}`);
+            setHTML('lblEditPrice', `<i class="fa-solid fa-tag text-teal-800"></i> ${L.lblPrice}`);
+            setHTML('lblEditImage', `<i class="fa-solid fa-image text-teal-800"></i> ${L.lblImage.replace(' *', '')}`);
+            setHTML('lblEditDesc', `<i class="fa-solid fa-align-left text-teal-800"></i> ${L.lblDesc}`);
+            setText('editImageHint', L.editImageHint);
+            setHTML('btnSaveEdit', `<i class="fa-solid fa-circle-check"></i> ${L.btnSaveEdit}`);
+            setHTML('btnEditCancel', `<i class="fa-solid fa-xmark"></i> ${L.btnCancel}`);
+
+            setHTML('adminAuthModalTitle', `${L.adminAuthModalTitle} <i class="fa-solid fa-lock text-amber-400"></i>`);
+            setHTML('lblAdminPass', `<i class="fa-solid fa-key text-slate-800"></i> ${L.lblAdminPass}`);
+            setHTML('btnAdminLogin', `<i class="fa-solid fa-right-to-bracket"></i> ${L.btnAdminLogin}`);
+            setText('btnAdminAuthCancel', L.btnAdminAuthCancel);
+
+            const fillCategories = (selectId) => {
+                const sel = el(selectId);
+                const prev = sel.value;
+                sel.innerHTML = '';
+                L.categories.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.val;
+                    opt.textContent = cat.name;
+                    sel.appendChild(opt);
+                });
+                if (prev) sel.value = prev;
+            };
+            fillCategories('productCategory');
+            fillCategories('editProductCategory');
+
+            if (backend) updatePhoneHint(); else setAuthUI('default');
+            if (activeSection) updateSectionBadge();
+        }
+
+        function updateSectionBadge() {
+            const L = translations[currentLang];
+            const badge = el('sectionHeaderBadge');
+            if (activeSection === 'boys') {
+                badge.innerHTML = `<i class="fa-solid fa-mars text-blue-600"></i> ${L.badgeBoys}`;
+                badge.className = 'inline-flex items-center gap-2 bg-blue-50 text-blue-800 text-xs font-extrabold px-4 py-1.5 rounded-full mb-4 border border-blue-100 shadow-2xs';
+            } else {
+                badge.innerHTML = `<i class="fa-solid fa-venus text-pink-600"></i> ${L.badgeGirls}`;
+                badge.className = 'inline-flex items-center gap-2 bg-pink-50 text-pink-800 text-xs font-extrabold px-4 py-1.5 rounded-full mb-4 border border-pink-100 shadow-2xs';
+            }
+        }
+
+        function promptPortalPin(sectionKey) {
+            pendingSectionTarget = sectionKey;
+            const L = translations[currentLang];
+            const title = sectionKey === 'boys' ? L.pinModalTitleBoys : L.pinModalTitleGirls;
+            setHTML('pinModalTitle', `${title} <i class="fa-solid fa-key text-amber-400"></i>`);
+            el('portalPinInput').value = '';
+            el('portalPinModal').classList.remove('hidden');
+        }
+
+        function closePortalPinModal() {
+            el('portalPinModal').classList.add('hidden');
+            pendingSectionTarget = '';
+        }
+
+        function verifyPortalPin(e) {
+            e.preventDefault();
+            const inputPin = el('portalPinInput').value.trim();
+            if (pendingSectionTarget === 'boys' && inputPin === 'Stud*26') {
+                enterSection('boys');
+            } else if (pendingSectionTarget === 'girls' && inputPin === 'F*Stud30') {
+                enterSection('girls');
+            } else {
+                showToast(translations[currentLang].errPinWrong, 'error');
+            }
+        }
+
+        async function enterSection(sectionKey) {
+            activeSection = sectionKey;
+            closePortalPinModal();
+            el('portalScreen').classList.add('hidden');
+            el('appContainer').classList.remove('hidden');
+            applyZoom(0);
+            updateSectionBadge();
+            productsLoading = true;
+            products = [];
+            renderAll();
+            await backendReady;
+            if (activeSection !== sectionKey) return;
+            subscribeProducts();
+        }
+
+        function subscribeProducts() {
+            if (unsubscribeProducts) { unsubscribeProducts(); unsubscribeProducts = null; }
+            if (mode === 'offline') { productsLoading = false; renderAll(); return; }
+            productsLoading = true;
+            unsubscribeProducts = backend.listenProducts(activeSection, list => {
+                productsLoading = false;
+                products = list.slice().sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                renderAll();
+            });
+        }
+
+        function returnToPortal() {
+            if (unsubscribeProducts) { unsubscribeProducts(); unsubscribeProducts = null; }
+            activeSection = null;
+            products = [];
+            currentSellerKey = null;
+            adminSession = false;
+            pendingAfterLogin = null;
+            ['myAuthModal', 'myProductsModal', 'editModal', 'addModal', 'adminAuthModal', 'productDetailsModal'].forEach(id => el(id).classList.add('hidden'));
+            el('adminDashboard').classList.add('hidden');
+            if (backend) backend.signOutAll().catch(() => {});
+            el('appContainer').classList.add('hidden');
+            el('portalScreen').classList.remove('hidden');
+            applyZoom(1);
+        }
+
+        function renderAll() {
+            renderProducts();
+            if (!el('adminDashboard').classList.contains('hidden')) renderAdminTable();
+            if (currentSellerKey && !el('myProductsModal').classList.contains('hidden')) renderMyProductsList();
+        }
+
+        function renderProducts() {
+            const L = translations[currentLang];
+            const grid = el('productsGrid');
+            const emptyState = el('emptyState');
+            const loadingState = el('loadingState');
+            const searchVal = normalizeText(el('searchInput').value);
+
+            grid.innerHTML = '';
+
+            if (productsLoading) {
+                loadingState.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+                return;
+            }
+            loadingState.classList.add('hidden');
+
+            const filtered = products.filter(p => {
+                const matchesSection = p.section === activeSection;
+                const matchesCat = currentCategory === 'all' || p.category === currentCategory;
+                const matchesSearch = normalizeText(p.title).includes(searchVal) ||
+                                      normalizeText(p.studentName).includes(searchVal) ||
+                                      normalizeText(p.category).includes(searchVal) ||
+                                      normalizeText(categoryLabel(p.category)).includes(searchVal);
+                const matchesStudent = !currentStudentFilter || p.studentName === currentStudentFilter;
+                return matchesSection && matchesCat && matchesSearch && matchesStudent;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            filtered.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card bg-white rounded-2xl overflow-hidden border border-slate-200/80 flex flex-col justify-between shadow-xs';
+                card.onclick = () => openProductModal(p);
+
+                const divMain = document.createElement('div');
+
+                const imgDiv = document.createElement('div');
+                imgDiv.className = 'relative h-36 bg-slate-200 overflow-hidden';
+                const bgImg = document.createElement('img');
+                bgImg.src = p.image || DEFAULT_IMAGE;
+                bgImg.alt = '';
+                bgImg.className = 'absolute inset-0 w-full h-full object-cover blur-xl scale-125 opacity-70';
+                imgDiv.appendChild(bgImg);
+                const img = document.createElement('img');
+                img.src = p.image || DEFAULT_IMAGE;
+                img.alt = p.title;
+                img.loading = 'lazy';
+                img.className = 'relative w-full h-full object-contain';
+                imgDiv.appendChild(img);
+
+                const badge = document.createElement('span');
+                badge.className = 'absolute top-2.5 ' + (currentLang === 'ar' ? 'right-2.5' : 'left-2.5') + ' ' + (p.section === 'boys' ? 'bg-blue-600' : 'bg-pink-600') + ' text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1';
+                badge.appendChild(makeIcon('fa-solid ' + (p.section === 'boys' ? 'fa-mars' : 'fa-venus')));
+                badge.appendChild(document.createTextNode(' ' + (p.section === 'boys' ? 'M-STUDENTS' : 'F-STUDENTS')));
+                imgDiv.appendChild(badge);
+                divMain.appendChild(imgDiv);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'p-3.5';
+
+                const h4 = document.createElement('h4');
+                h4.className = 'font-bold text-slate-900 text-xs md:text-sm leading-snug mb-1';
+                h4.textContent = p.title;
+                contentDiv.appendChild(h4);
+
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'flex items-center justify-between mb-2 gap-2';
+                const priceSpan = document.createElement('span');
+                priceSpan.className = 'font-black text-teal-800 text-sm flex items-center gap-1';
+                priceSpan.appendChild(makeIcon('fa-solid fa-tag text-xs text-amber-500'));
+                priceSpan.appendChild(document.createTextNode(' ' + p.price));
+
+                const catSpan = document.createElement('span');
+                catSpan.className = 'text-[10px] font-semibold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100 flex items-center gap-1';
+                catSpan.appendChild(makeIcon('fa-solid fa-folder text-teal-700'));
+                catSpan.appendChild(document.createTextNode(' ' + categoryLabel(p.category)));
+
+                rowDiv.appendChild(priceSpan);
+                rowDiv.appendChild(catSpan);
+                contentDiv.appendChild(rowDiv);
+
+                const studentSpan = document.createElement('span');
+                studentSpan.className = 'text-[11px] text-slate-500 font-medium block truncate flex items-center gap-1';
+                studentSpan.appendChild(makeIcon('fa-solid fa-user-graduate text-teal-700'));
+                studentSpan.appendChild(document.createTextNode(' ' + L.cardStudentLabel + ' '));
+                const nameStrong = document.createElement('span');
+                nameStrong.className = 'font-bold text-slate-700';
+                nameStrong.textContent = p.studentName;
+                studentSpan.appendChild(nameStrong);
+                contentDiv.appendChild(studentSpan);
+
+                divMain.appendChild(contentDiv);
+                card.appendChild(divMain);
+
+                const bottomDiv = document.createElement('div');
+                bottomDiv.className = 'p-3 pt-0';
+                const actionBtn = document.createElement('div');
+                actionBtn.className = 'w-full py-2 bg-teal-50 hover:bg-teal-100 text-teal-800 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition';
+                actionBtn.appendChild(makeIcon('fa-solid fa-eye text-xs'));
+                actionBtn.appendChild(document.createTextNode(' ' + L.btnViewDetails));
+                bottomDiv.appendChild(actionBtn);
+                card.appendChild(bottomDiv);
+
+                grid.appendChild(card);
+            });
+        }
+
+        function openProductModal(p) {
+            const L = translations[currentLang];
+            el('modalProdImage').src = p.image || DEFAULT_IMAGE;
+            el('modalProdImageBg').src = p.image || DEFAULT_IMAGE;
+            el('modalProdCategory').textContent = categoryLabel(p.category);
+            el('modalProdTitle').textContent = p.title;
+            el('modalProdPrice').textContent = p.price;
+            el('modalProdDesc').textContent = p.description || L.noDescription;
+            el('modalProdStudent').textContent = p.studentName;
+
+            const msg = encodeURIComponent(L.waGreeting(p.studentName, p.title, p.price));
+            el('modalWhatsappBtn').href = 'https://wa.me/' + toWaNumber(p.whatsapp) + '?text=' + msg;
+            el('productDetailsModal').classList.remove('hidden');
+        }
+
+        function closeProductModal() { el('productDetailsModal').classList.add('hidden'); }
+
+        function showHome() {
+            currentStudentFilter = null;
+            currentCategory = 'all';
+            el('searchInput').value = '';
+            el('heroBanner').classList.remove('hidden');
+            el('studentProfileHeader').classList.add('hidden');
+            renderProducts();
+        }
+
+        function setCategory(cat) { currentCategory = cat; renderProducts(); }
+        function filterProducts() { renderProducts(); }
+        function scrollToSection(id) { const n = el(id); if (n) n.scrollIntoView({ behavior: 'smooth' }); }
+
+        async function handleImageUpload(e) {
+            const L = translations[currentLang];
+            const file = e.target.files[0];
+            if (!file) return;
+            try {
+                uploadedImageBase64 = await compressImage(file);
+                el('imagePreview').src = uploadedImageBase64;
+                el('imagePreviewContainer').classList.remove('hidden');
+            } catch (err) {
+                uploadedImageBase64 = '';
+                e.target.value = '';
+                el('imagePreviewContainer').classList.add('hidden');
+                showToast(err && err.message === 'type' ? L.errImageType : L.errImageProcess, 'error');
+            }
+        }
+
+        function startAddProduct() {
+            const L = translations[currentLang];
+            if (mode === 'offline' || !backend) { showToast(L.msgOfflineBlock, 'error'); return; }
+            if (!currentSellerKey) { pendingAfterLogin = 'add'; openMyAuthModal(); return; }
+            openAddModal();
+        }
+
+        function openAddModal() {
+            el('whatsappNumber').value = '0' + currentSellerKey;
+            el('addModal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            el('addModal').classList.add('hidden');
+            uploadedImageBase64 = '';
+            el('productImageFile').value = '';
+            el('imagePreviewContainer').classList.add('hidden');
+        }
+
+        async function handleProductSubmit(e) {
+            e.preventDefault();
+            const L = translations[currentLang];
+            if (mode === 'offline' || !backend) { showToast(L.msgOfflineBlock, 'error'); return; }
+            if (!currentSellerKey) { closeAddModal(); pendingAfterLogin = 'add'; openMyAuthModal(); return; }
+
+            const form = e.target;
+            const submitBtn = el('btnPublish');
+            submitBtn.disabled = true;
+            if (!pendingProductId) pendingProductId = generateId();
+
+            const newProd = {
+                id: pendingProductId,
+                section: activeSection,
+                ownerKey: currentSellerKey,
+                studentName: el('studentName').value.trim(),
+                whatsapp: '0' + currentSellerKey,
+                title: el('productTitle').value.trim(),
+                price: el('productPrice').value.trim(),
+                category: el('productCategory').value,
+                description: el('productDesc').value.trim(),
+                image: uploadedImageBase64 || DEFAULT_IMAGE,
+                createdAt: Date.now()
+            };
+
+            try {
+                await backend.addProduct(newProd);
+                pendingProductId = null;
+                closeAddModal();
+                form.reset();
+                showToast(L.msgPublished, 'success');
+            } catch (err) {
+                console.error('Publish failed', err);
+                showToast(L.msgPublishFailed, 'error');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        function openMyAuthModal() {
+            const L = translations[currentLang];
+            if (mode === 'offline' || !backend) { showToast(L.msgOfflineBlock, 'error'); return; }
+            if (currentSellerKey) {
+                if (pendingAfterLogin === 'add') { pendingAfterLogin = null; openAddModal(); }
+                else openMyProductsPanel();
+                return;
+            }
+            el('myPhoneInput').value = '';
+            el('myPassInput').value = '';
+            el('myConfirmInput').value = '';
+            setAuthUI('default');
+            el('myAuthModal').classList.remove('hidden');
+        }
+
+        function closeMyAuthModal() {
+            el('myAuthModal').classList.add('hidden');
+            pendingAfterLogin = null;
+        }
+
+        function setAuthUI(state) {
+            const L = translations[currentLang];
+            const hint = el('myAuthHint'), wrap = el('myConfirmWrap'), btn = el('btnMyAuthSubmit');
+            const loginLabel = `<i class="fa-solid fa-right-to-bracket"></i> ${L.myAuthBtnLogin}`;
+            if (state === 'new') {
+                hint.textContent = L.myAuthHintNew;
+                wrap.classList.remove('hidden');
+                btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${L.myAuthBtnCreate}`;
+            } else if (state === 'login') {
+                hint.textContent = L.myAuthHintLogin;
+                wrap.classList.add('hidden');
+                btn.innerHTML = loginLabel;
+            } else if (state === 'checking') {
+                hint.textContent = L.myAuthHintChecking;
+            } else if (state === 'error') {
+                hint.textContent = L.errNetwork;
+                wrap.classList.add('hidden');
+                btn.innerHTML = loginLabel;
+            } else {
+                hint.textContent = L.myAuthHintDefault;
+                wrap.classList.add('hidden');
+                btn.innerHTML = loginLabel;
+            }
+        }
+
+        function onMyPhoneInput() {
+            clearTimeout(phoneCheckTimer);
+            const key = normalizePhone(el('myPhoneInput').value);
+            if (key.length < 7) { phoneCheckToken++; setAuthUI('default'); return; }
+            setAuthUI('checking');
+            phoneCheckTimer = setTimeout(updatePhoneHint, 400);
+        }
+
+        async function updatePhoneHint() {
+            const key = normalizePhone(el('myPhoneInput').value);
+            if (key.length < 7 || !backend || mode === 'offline') { setAuthUI('default'); return; }
+            const token = ++phoneCheckToken;
+            try {
+                const exists = await backend.accountExists(key);
+                if (token !== phoneCheckToken) return;
+                setAuthUI(exists ? 'login' : 'new');
+            } catch (err) {
+                if (token !== phoneCheckToken) return;
+                setAuthUI('error');
+            }
+        }
+
+        async function handleMyAuth(e) {
+            e.preventDefault();
+            const L = translations[currentLang];
+            if (mode === 'offline' || !backend) { showToast(L.msgOfflineBlock, 'error'); return; }
+
+            const key = normalizePhone(el('myPhoneInput').value);
+            const pass = el('myPassInput').value;
+            if (key.length < 7) { showToast(L.errInvalidPhone, 'error'); return; }
+
+            const btn = el('btnMyAuthSubmit');
+            btn.disabled = true;
+            try {
+                const exists = await backend.accountExists(key);
+                if (!exists) {
+                    const confirmPass = el('myConfirmInput').value;
+                    if (el('myConfirmWrap').classList.contains('hidden')) { 
+                        setAuthUI('new'); 
+                        btn.disabled = false;
+                        return; 
+                    }
+                    if (pass.length < 4 || pass.length > 6) { showToast(L.errPassLen, 'error'); btn.disabled = false; return; }
+                    if (pass !== confirmPass) { showToast(L.errPassMismatch, 'error'); btn.disabled = false; return; }
+                    
+                    await backend.register(key, pass);
+                    showToast(L.msgAccountCreated, 'success');
+                } else {
+                    await backend.login(key, pass);
+                }
+                currentSellerKey = key;
+                adminSession = false;
+                el('adminDashboard').classList.add('hidden');
+                const next = pendingAfterLogin;
+                pendingAfterLogin = null;
+                el('myAuthModal').classList.add('hidden');
+                if (next === 'add') openAddModal(); else openMyProductsPanel();
+            } catch (err) {
+                console.error('Seller auth failed', err);
+                showToast(authErrorMessage(err), 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function openMyProductsPanel() {
+            el('myProductsPhone').textContent = '0' + currentSellerKey;
+            renderMyProductsList();
+            el('myProductsModal').classList.remove('hidden');
+        }
+
+        function closeMyProductsModal() { el('myProductsModal').classList.add('hidden'); }
+
+        function logoutMyProducts() {
+            currentSellerKey = null;
+            closeMyProductsModal();
+            el('editModal').classList.add('hidden');
+            el('addModal').classList.add('hidden');
+            if (backend) backend.signOutAll().catch(() => {});
+            el('myPhoneInput').value = '';
+            el('myPassInput').value = '';
+            el('myConfirmInput').value = '';
+            setAuthUI('default');
+        }
+
+        function isMyProduct(p) { return !!p && !!currentSellerKey && ownerOf(p) === currentSellerKey; }
+
+        function renderMyProductsList() {
+            const L = translations[currentLang];
+            const list = el('myProductsList');
+            list.innerHTML = '';
+            const mine = products.filter(p => p.section === activeSection && isMyProduct(p));
+            el('myProductsEmpty').classList.toggle('hidden', mine.length > 0);
+
+            mine.forEach(p => {
+                const row = document.createElement('div');
+                row.className = 'flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl p-3';
+
+                const img = document.createElement('img');
+                img.src = p.image || DEFAULT_IMAGE;
+                img.alt = '';
+                img.className = 'w-16 h-16 rounded-xl object-contain bg-slate-100 shrink-0';
+
+                const info = document.createElement('div');
+                info.className = 'flex-1 min-w-0';
+                const title = document.createElement('p');
+                title.className = 'font-black text-slate-900 text-xs truncate';
+                title.textContent = p.title;
+                const meta = document.createElement('p');
+                meta.className = 'text-[11px] text-slate-500 font-semibold mt-0.5 truncate';
+                meta.textContent = p.price + ' • ' + categoryLabel(p.category);
+                info.appendChild(title);
+                info.appendChild(meta);
+
+                const actions = document.createElement('div');
+                actions.className = 'flex items-center gap-1.5 shrink-0';
+
+                const editBtn = document.createElement('button');
+                editBtn.className = 'px-2.5 py-1.5 bg-teal-50 text-teal-800 hover:bg-teal-100 rounded-lg text-xs font-bold transition flex items-center gap-1';
+                editBtn.appendChild(makeIcon('fa-solid fa-pen'));
+                editBtn.appendChild(document.createTextNode(' ' + L.btnEdit));
+                editBtn.onclick = () => openEditModal(p.id);
+
+                const delBtn = document.createElement('button');
+                delBtn.className = 'px-2.5 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg text-xs font-bold transition flex items-center gap-1';
+                delBtn.appendChild(makeIcon('fa-solid fa-trash'));
+                delBtn.appendChild(document.createTextNode(' ' + L.btnDelete));
+                delBtn.onclick = () => deleteMyProduct(p.id);
+
+                actions.appendChild(editBtn);
+                actions.appendChild(delBtn);
+                row.appendChild(img);
+                row.appendChild(info);
+                row.appendChild(actions);
+                list.appendChild(row);
+            });
+        }
+
+        function openEditModal(id) {
+            const p = products.find(x => x.id === id);
+            if (!isMyProduct(p)) return;
+            editingProductId = id;
+            editImageBase64 = '';
+            el('editStudentName').value = p.studentName;
+            el('editProductTitle').value = p.title;
+            el('editProductPrice').value = p.price;
+            el('editProductDesc').value = p.description || '';
+            el('editProductCategory').value = p.category;
+            el('editImagePreview').src = p.image || DEFAULT_IMAGE;
+            el('editImageFile').value = '';
+            el('editModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            el('editModal').classList.add('hidden');
+            editingProductId = null;
+            editImageBase64 = '';
+        }
+
+        async function handleEditImageUpload(e) {
+            const L = translations[currentLang];
+            const file = e.target.files[0];
+            if (!file) return;
+            try {
+                editImageBase64 = await compressImage(file);
+                el('editImagePreview').src = editImageBase64;
+            } catch (err) {
+                editImageBase64 = '';
+                e.target.value = '';
+                showToast(err && err.message === 'type' ? L.errImageType : L.errImageProcess, 'error');
+            }
+        }
+
+        async function handleEditSubmit(e) {
+            e.preventDefault();
+            const L = translations[currentLang];
+            const p = products.find(x => x.id === editingProductId);
+            if (!isMyProduct(p)) { closeEditModal(); return; }
+
+            const fields = {
+                studentName: el('editStudentName').value.trim(),
+                title: el('editProductTitle').value.trim(),
+                price: el('editProductPrice').value.trim(),
+                category: el('editProductCategory').value,
+                description: el('editProductDesc').value.trim(),
+                image: editImageBase64 || p.image || DEFAULT_IMAGE
+            };
+
+            const btn = el('btnSaveEdit');
+            btn.disabled = true;
+            try {
+                await backend.updateProduct(p.id, fields);
+                closeEditModal();
+                showToast(L.msgEditSaved, 'success');
+            } catch (err) {
+                console.error('Edit failed', err);
+                showToast(L.msgSaveFailed, 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function deleteMyProduct(id) {
+            const L = translations[currentLang];
+            const p = products.find(x => x.id === id);
+            if (!isMyProduct(p)) return;
+            if (!confirm(L.msgDeleteConfirm)) return;
+            try { 
+                await backend.deleteProduct(id);
+                showToast(L.msgDeleted, 'success');
+            }
+            catch (err) { console.error('Delete failed', err); showToast(L.msgDeleteFailed, 'error'); }
+        }
+
+        function openAdminModal() {
+            const L = translations[currentLang];
+            if (mode === 'offline' || !backend) { showToast(L.msgOfflineBlock, 'error'); return; }
+            el('adminPasswordInput').value = '';
+            el('adminAuthModal').classList.remove('hidden');
+        }
+        function closeAdminAuthModal() { el('adminAuthModal').classList.add('hidden'); }
+
+        async function handleAdminAuth(e) {
+            e.preventDefault();
+            const pass = el('adminPasswordInput').value;
+            const btn = el('btnAdminLogin');
+            btn.disabled = true;
+            try {
+                await backend.adminLogin(pass);
+                adminSession = true;
+                currentSellerKey = null;
+                ['myProductsModal', 'editModal', 'myAuthModal'].forEach(id => el(id).classList.add('hidden'));
+                closeAdminAuthModal();
+                showAdminDashboard();
+                showToast(translations[currentLang].msgAdminIn, 'success');
+            } catch (err) {
+                showToast(authErrorMessage(err), 'error');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function showAdminDashboard() {
+            el('adminDashboard').classList.remove('hidden');
+            renderAdminTable();
+            scrollToSection('adminDashboard');
+        }
+
+        function closeAdminDashboard() {
+            el('adminDashboard').classList.add('hidden');
+            adminSession = false;
+            if (backend) backend.signOutAll().catch(() => {});
+        }
+
+        function renderAdminTable() {
+            const L = translations[currentLang];
+            const tbody = el('adminTableBody');
+            tbody.innerHTML = '';
+
+            const sectionProducts = products.filter(p => p.section === activeSection);
+            el('statTotalProducts').textContent = sectionProducts.length;
+            el('statTotalStudents').textContent = new Set(sectionProducts.map(p => ownerOf(p))).size;
+            el('statTotalCategories').textContent = new Set(sectionProducts.map(p => p.category)).size;
+
+            sectionProducts.forEach(p => {
+                const tr = document.createElement('tr');
+                const addCell = (cls, text) => { const td = document.createElement('td'); td.className = cls; td.textContent = text; tr.appendChild(td); return td; };
+
+                const tdStudent = document.createElement('td');
+                tdStudent.className = 'p-3.5 font-semibold text-slate-800';
+                tdStudent.appendChild(makeIcon('fa-solid fa-user text-teal-700 me-1.5'));
+                tdStudent.appendChild(document.createTextNode(p.studentName));
+                tr.appendChild(tdStudent);
+
+                const tdCat = document.createElement('td');
+                tdCat.className = 'p-3.5 font-bold text-teal-800';
+                tdCat.appendChild(makeIcon('fa-solid fa-folder text-teal-600 me-1.5'));
+                tdCat.appendChild(document.createTextNode(categoryLabel(p.category)));
+                tr.appendChild(tdCat);
+
+                addCell('p-3.5 font-bold text-slate-900', p.title);
+                addCell('p-3.5 text-teal-800 font-extrabold', p.price);
+                const tdWa = addCell('p-3.5 font-medium text-slate-500', p.whatsapp);
+                tdWa.dir = 'ltr';
+
+                const tdAction = document.createElement('td');
+                tdAction.className = 'p-3.5 text-center';
+                const delBtn = document.createElement('button');
+                delBtn.className = 'px-2.5 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-bold transition flex items-center gap-1 mx-auto';
+                delBtn.appendChild(makeIcon('fa-solid fa-trash'));
+                delBtn.appendChild(document.createTextNode(' ' + L.btnDelete));
+                delBtn.onclick = () => deleteProductAsAdmin(p.id);
+                tdAction.appendChild(delBtn);
+                tr.appendChild(tdAction);
+
+                tbody.appendChild(tr);
+            });
+
+            renderAdminAccounts();
+        }
+
+        async function deleteProductAsAdmin(id) {
+            const L = translations[currentLang];
+            if (!confirm(L.msgDeleteConfirm)) return;
+            try { 
+                await backend.deleteProduct(id); 
+                showToast(L.msgDeleted, 'success');
+            }
+            catch (err) { console.error('Admin delete failed', err); showToast(L.msgDeleteFailed, 'error'); }
+        }
+
+        async function renderAdminAccounts() {
+            const L = translations[currentLang];
+            const box = el('adminAccountsList');
+            if (!box || !backend) return;
+            let keys = [];
+            try { keys = await backend.listAccounts(); } catch (err) { console.warn('Could not list accounts', err); }
+            box.innerHTML = '';
+            if (keys.length === 0) { box.textContent = L.adminAccountsEmpty; return; }
+            keys.forEach(key => {
+                const chip = document.createElement('div');
+                chip.className = 'flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5';
+                const num = document.createElement('span');
+                num.className = 'font-bold text-slate-700';
+                num.dir = 'ltr';
+                num.textContent = '0' + key;
+                const btn = document.createElement('button');
+                btn.className = 'px-2 py-0.5 bg-amber-50 text-amber-800 hover:bg-amber-100 rounded-lg font-bold transition';
+                btn.textContent = L.btnResetPass;
+                btn.onclick = () => resetAccount(key);
+                chip.appendChild(num);
+                chip.appendChild(btn);
+                box.appendChild(chip);
+            });
+        }
+
+        async function resetAccount(key) {
+            const L = translations[currentLang];
+            if (!confirm(L.msgResetConfirm)) return;
+            try {
+                await backend.resetAccount(key);
+                if (mode === 'cloud') alert(L.msgResetCloudHint);
+                showToast(L.msgResetDone, 'success');
+                renderAdminAccounts();
+            } catch (err) {
+                console.error('Reset failed', err);
+                showToast(L.errNetwork, 'error');
+            }
+        }
+
+        async function changeAdminPassword() {
+            const L = translations[currentLang];
+            const newPass = prompt(L.promptNewAdminPass);
+            if (!newPass || newPass.trim() === '') return;
+            const np = newPass.trim();
+            if (mode === 'cloud' && np.length < 6) { showToast(L.msgAdminPassShort, 'error'); return; }
+            try {
+                await backend.changeAdminPassword(np);
+                showToast(L.msgAdminPassUpdated, 'success');
+            } catch (err) {
+                console.error('Change admin password failed', err);
+                showToast(L.errNetwork, 'error');
+            }
+        }
+
+        applyLanguage();
+        backendReady = initBackend();
+    </script>
+</body>
+</html>
