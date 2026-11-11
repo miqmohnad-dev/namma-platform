@@ -1614,7 +1614,30 @@
         }
 
         function openAddModal() {
-            el('whatsappNumber').value = '0' + currentSellerKey;
+            function openAddModal() {
+  let rawKey = currentSellerKey ? currentSellerKey.toString() : '';
+  
+  // 1. تنظيف الرقم من أي رموز أو مسافات
+  let clean = rawKey.replace(/\D/g, '');
+  
+  // 2. إزالة المفاتيح الدولية القديمة إذا وجدت (مثل 972 أو 970) لتوحيد القاعدة
+  if (clean.startsWith('972')) {
+    clean = clean.substring(3);
+  } else if (clean.startsWith('970')) {
+    clean = clean.substring(3);
+  }
+  
+  // 3. إزالة الصفر إن وجد في البداية لضمان عدم تكراره
+  if (clean.startsWith('0')) {
+    clean = clean.substring(1);
+  }
+  
+  // 4. وضع الرقم في الحقل مسبوقاً بـ 0 بالشكل الصحيح والموحد (مثل 059...)
+  el('whatsappNumber').value = '0' + clean;
+  
+  // إظهار نافذة الإضافة
+  el('addModal').classList.remove('hidden');
+}
             el('addModal').classList.remove('hidden');
         }
 
