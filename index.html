@@ -456,6 +456,10 @@
                     <input type="text" id="whatsappNumber" required readonly placeholder="0591234567" class="w-full px-2.5 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-xs focus:outline-none font-semibold text-slate-600">
                 </div>
                 <div>
+                    <label class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1"><i class="fa-brands fa-whatsapp text-teal-800"></i> WhatsApp country code / رمز دولة الواتساب</label>
+                    <select id="waCountry" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:outline-none font-semibold" dir="ltr"><option value="972">+972</option><option value="970" selected>+970</option></select>
+                </div>
+                <div>
                     <label id="lblProductTitle" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1"><i class="fa-solid fa-box text-teal-800"></i> Product Title *</label>
                     <input type="text" id="productTitle" required maxlength="100" placeholder="..." class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold">
                 </div>
@@ -558,6 +562,10 @@
                     <input type="text" id="editProductPrice" required maxlength="30" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:bg-white focus:outline-none font-semibold">
                 </div>
                 <div>
+                    <label class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1"><i class="fa-brands fa-whatsapp text-teal-800"></i> WhatsApp country code / رمز دولة الواتساب</label>
+                    <select id="editWaCountry" class="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-teal-700 focus:outline-none font-semibold" dir="ltr"><option value="972">+972</option><option value="970">+970</option></select>
+                </div>
+                <div>
                     <label id="lblEditImage" class="block text-[10px] font-bold text-slate-700 mb-0.5 flex items-center gap-1.5"><i class="fa-solid fa-image text-teal-800"></i> Product Image</label>
                     <input type="file" id="editImageFile" accept="image/*" onchange="handleEditImageUpload(event)" class="w-full text-[10px] text-slate-500 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[10px] file:font-bold file:bg-teal-50 file:text-teal-800 hover:file:bg-teal-100">
                     <div class="mt-1.5"><img id="editImagePreview" src="" class="h-12 w-full object-contain bg-slate-100 rounded-lg border border-slate-200"></div>
@@ -607,7 +615,7 @@
         const ADMIN_EMAIL = "admin@namaa.example";
         const STUDENT_EMAIL_DOMAIN = "students.namaa.example";
         const FIREBASE_VERSION = "10.7.1";
-        const DEFAULT_COUNTRY_CODE = "970";
+        const DEFAULT_COUNTRY_CODE = "970"; // تم تحديث رمز الدولة الافتراضي ليكون 970
         const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&q=80';
 
         const translations = {
@@ -974,28 +982,26 @@
             return d.length > 9 ? d.slice(-9) : d.replace(/^0+/, '');
         }
 
-       function toWaNumber(raw) {
-    const d = String(raw || '').replace(/\D/g, '');
-    
-    // إذا كان الرقم يبدأ بـ 972، حوله إلى 970
-    if (d.startsWith('972')) {
-        return '970' + d.slice(3);
-    }
-    // إذا كان يبدأ بـ 05، استبدل الصفر بـ 970
-    if (d.startsWith('05')) {
-        return '970' + d.slice(1);
-    }
-    // إذا كان يبدأ بـ 0، احذف الصفر وأضف 970
-    if (d.startsWith('0')) {
-        return '970' + d.slice(1);
-    }
-    // إذا كان طول الرقم 9 أرقام بدون مفتاح، أضف 970 في البداية
-    if (d.length === 9) {
-        return '970' + d;
-    }
-    
-    return d;
-}
+        // دالة توحيد أرقام الواتساب المحدثة والمضبوطة تماماً لتجنب الأخطاء
+        function toWaNumber(raw, code) {
+            const cc = (code === '970' || code === '972') ? code : DEFAULT_COUNTRY_CODE;
+            const d = String(raw || '').replace(/\D/g, '');
+            if (d.startsWith('972')) {
+                return '970' + d.slice(3);
+            }
+            if (d.startsWith('970')) {
+                return d;
+            }
+            if (d.startsWith('05')) {
+                return cc + d.slice(1);
+            }
+            if (d.startsWith('0')) {
+                return cc + d.slice(1);
+            }
+            if (d.length === 9) {
+                return cc + d;
+            }
+            return d;
         }
 
         function ownerOf(p) { return p.ownerKey || normalizePhone(p.whatsapp); }
@@ -1587,7 +1593,7 @@
             el('modalProdStudent').textContent = p.studentName;
 
             const msg = encodeURIComponent(L.waGreeting(p.studentName, p.title, p.price));
-            el('modalWhatsappBtn').href = 'https://wa.me/' + toWaNumber(p.whatsapp) + '?text=' + msg;
+            el('modalWhatsappBtn').href = 'https://wa.me/' + toWaNumber(p.whatsapp, p.waCode) + '?text=' + msg;
             el('productDetailsModal').classList.remove('hidden');
         }
 
@@ -1630,30 +1636,7 @@
         }
 
         function openAddModal() {
-            function openAddModal() {
-  let rawKey = currentSellerKey ? currentSellerKey.toString() : '';
-  
-  // 1. تنظيف الرقم من أي رموز أو مسافات
-  let clean = rawKey.replace(/\D/g, '');
-  
-  // 2. إزالة المفاتيح الدولية القديمة إذا وجدت (مثل 972 أو 970) لتوحيد القاعدة
-  if (clean.startsWith('972')) {
-    clean = clean.substring(3);
-  } else if (clean.startsWith('970')) {
-    clean = clean.substring(3);
-  }
-  
-  // 3. إزالة الصفر إن وجد في البداية لضمان عدم تكراره
-  if (clean.startsWith('0')) {
-    clean = clean.substring(1);
-  }
-  
-  // 4. وضع الرقم في الحقل مسبوقاً بـ 0 بالشكل الصحيح والموحد (مثل 059...)
-  el('whatsappNumber').value = '0' + clean;
-  
-  // إظهار نافذة الإضافة
-  el('addModal').classList.remove('hidden');
-}
+            el('whatsappNumber').value = '0' + currentSellerKey;
             el('addModal').classList.remove('hidden');
         }
 
@@ -1681,6 +1664,7 @@
                 ownerKey: currentSellerKey,
                 studentName: el('studentName').value.trim(),
                 whatsapp: '0' + currentSellerKey,
+                waCode: el('waCountry').value,
                 title: el('productTitle').value.trim(),
                 price: el('productPrice').value.trim(),
                 category: el('productCategory').value,
@@ -1895,6 +1879,7 @@
             el('editProductTitle').value = p.title;
             el('editProductPrice').value = p.price;
             el('editProductDesc').value = p.description || '';
+            el('editWaCountry').value = p.waCode || DEFAULT_COUNTRY_CODE;
             el('editProductCategory').value = p.category;
             el('editImagePreview').src = p.image || DEFAULT_IMAGE;
             el('editImageFile').value = '';
@@ -1933,6 +1918,7 @@
                 price: el('editProductPrice').value.trim(),
                 category: el('editProductCategory').value,
                 description: el('editProductDesc').value.trim(),
+                waCode: el('editWaCountry').value,
                 image: editImageBase64 || p.image || DEFAULT_IMAGE
             };
 
