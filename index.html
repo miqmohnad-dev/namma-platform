@@ -974,12 +974,28 @@
             return d.length > 9 ? d.slice(-9) : d.replace(/^0+/, '');
         }
 
-        function toWaNumber(raw) {
-            const d = String(raw || '').replace(/\D/g, '');
-            if (d.startsWith('00')) return d.slice(2);
-            if (d.startsWith('0') && d.length >= 9) return DEFAULT_COUNTRY_CODE + d.slice(1);
-            if (d.length === 9) return DEFAULT_COUNTRY_CODE + d;
-            return d;
+       function toWaNumber(raw) {
+    const d = String(raw || '').replace(/\D/g, '');
+    
+    // إذا كان الرقم يبدأ بـ 972، حوله إلى 970
+    if (d.startsWith('972')) {
+        return '970' + d.slice(3);
+    }
+    // إذا كان يبدأ بـ 05، استبدل الصفر بـ 970
+    if (d.startsWith('05')) {
+        return '970' + d.slice(1);
+    }
+    // إذا كان يبدأ بـ 0، احذف الصفر وأضف 970
+    if (d.startsWith('0')) {
+        return '970' + d.slice(1);
+    }
+    // إذا كان طول الرقم 9 أرقام بدون مفتاح، أضف 970 في البداية
+    if (d.length === 9) {
+        return '970' + d;
+    }
+    
+    return d;
+}
         }
 
         function ownerOf(p) { return p.ownerKey || normalizePhone(p.whatsapp); }
